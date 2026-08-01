@@ -5,7 +5,7 @@ incidents to a secure cloud backend (Firebase Firestore), the system creates an 
 
 ## Demo
 
-[![Download](https://img.shields.io/badge/Download-v1.2.0-blue?style=flat-square)](https://github.com/zilitye/Anti-Gromming-Detection-ChatApp/releases/download/v1.2.0/app-release.apk)
+[![Download](https://img.shields.io/badge/Download-v2.0.0-blue?style=flat-square)](https://github.com/zilitye/ChatApp/releases/download/v2.0.0/app-release.apk)
 
 Install and run `app-release.apk`. Requires Android 7.0 or higher
 
