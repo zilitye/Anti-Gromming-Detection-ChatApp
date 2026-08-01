@@ -14,15 +14,22 @@ import com.example.chatapp.listeners.ConversionListener;
 import com.example.chatapp.models.ChatMessage;
 import com.example.chatapp.models.User;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class RecentConversationsAdapter extends RecyclerView.Adapter<RecentConversationsAdapter.ConversionViewHolder>{
 
-    private final List<ChatMessage> chatMessages;
+    /** Source of truth, kept in sync with Firestore by the activity. */
+    private final List<ChatMessage> allConversations;
+    /** What is actually shown, a possibly-filtered view of allConversations. */
+    private final List<ChatMessage> displayedConversations = new ArrayList<>();
     private final ConversionListener conversionListener;
+    private String currentQuery = "";
 
     public RecentConversationsAdapter(List<ChatMessage> chatMessages, ConversionListener conversionListener){
-        this.chatMessages = chatMessages;
+        this.allConversations = chatMessages;
+        this.displayedConversations.addAll(chatMessages);
         this.conversionListener = conversionListener;
     }
 
@@ -40,12 +47,43 @@ public class RecentConversationsAdapter extends RecyclerView.Adapter<RecentConve
 
     @Override
     public void onBindViewHolder(@NonNull ConversionViewHolder holder, int position) {
-        holder.setData(chatMessages.get(position));
+        holder.setData(displayedConversations.get(position));
     }
 
     @Override
     public int getItemCount() {
-        return chatMessages.size();
+        return displayedConversations.size();
+    }
+
+    /** Call after allConversations has been mutated in place (e.g. by a Firestore listener). */
+    public void refresh() {
+        applyFilter();
+        notifyDataSetChanged();
+    }
+
+    /** Filters the visible list by contact name without losing the underlying conversation data. */
+    public void filter(String query) {
+        currentQuery = query == null ? "" : query.trim().toLowerCase(Locale.getDefault());
+        applyFilter();
+        notifyDataSetChanged();
+    }
+
+    private void applyFilter() {
+        displayedConversations.clear();
+        if (currentQuery.isEmpty()) {
+            displayedConversations.addAll(allConversations);
+        } else {
+            for (ChatMessage message : allConversations) {
+                if (message.conversionName != null &&
+                        message.conversionName.toLowerCase(Locale.getDefault()).contains(currentQuery)) {
+                    displayedConversations.add(message);
+                }
+            }
+        }
+    }
+
+    public boolean isSourceEmpty() {
+        return allConversations.isEmpty();
     }
 
     class ConversionViewHolder extends RecyclerView.ViewHolder{

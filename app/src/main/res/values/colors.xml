@@ -1,22 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="primary">#F6F6F6</color>
-    <color name="primary_dark">#EBEBEB</color>
-    <color name="primary_text">#1D1D1F</color>
-    <color name="secondary_text">#86868B</color>
+    <!-- WhatsApp-inspired palette -->
+    <color name="primary">#F0F2F5</color>
+    <color name="primary_dark">#E9EDEF</color>
+    <color name="primary_text">#111B21</color>
+    <color name="secondary_text">#667781</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="black">#000000</color>
     <color name="input_background">#FFFFFF</color>
-    <color name="icon_background">#EBEBEB</color>
-    <color name="error">#FF3B30</color>
-    <color name="receive_message_background">#E9E9EB</color>
-    <color name="receive_message_text">#1D1D1F</color>
-    <color name="sent_message_background">#007AFF</color>
-    <color name="sent_message_text">#FFFFFF</color>
+    <color name="icon_background">#00000000</color>
+    <color name="error">#D6293E</color>
+
+    <color name="receive_message_background">#FFFFFF</color>
+    <color name="receive_message_text">#111B21</color>
+    <color name="sent_message_background">#D9FDD3</color>
+    <color name="sent_message_text">#111B21</color>
     <color name="card_background">#FFFFFF</color>
-    <color name="macos_accent">#007AFF</color>
-    <color name="macos_traffic_red">#FF5F57</color>
-    <color name="macos_traffic_yellow">#FEBC2E</color>
-    <color name="macos_traffic_green">#28C840</color>
-    <color name="green">#34C759</color>
-    <color name="red">#FF3B30</color>
+
+    <!-- Kept name for compatibility: now the WhatsApp teal accent -->
+    <color name="macos_accent">#1DAB61</color>
+    <color name="accent_dark">#1DAB61</color>
+    <color name="accent_light">#1DAB61</color>
+
+    <color name="macos_traffic_red">#E4483C</color>
+    <color name="macos_traffic_yellow">#F5B301</color>
+    <color name="macos_traffic_green">#25D366</color>
+
+    <color name="green">#25D366</color>
+    <color name="red">#E4483C</color>
+
+    <color name="chat_wallpaper">#EFEAE2</color>
+    <color name="divider">#E9EDEF</color>
+    <color name="banner_background">#FEF6E0</color>
+    <color name="banner_text">#8A6D00</color>
+    <color name="unread_badge">#25D366</color>
 </resources>

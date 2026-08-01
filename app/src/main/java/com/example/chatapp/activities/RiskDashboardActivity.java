@@ -87,8 +87,8 @@ public class RiskDashboardActivity extends BaseActivity {
                             if (result.riskLevel != GroomingDetector.RiskLevel.SAFE) {
                                 totalScore += result.score;
                                 flaggedCount++;
-                                if (detectedWords.length() > 0) detectedWords.append(", ");
-                                detectedWords.append(result.reason.replace("Suspicious patterns detected: ", "").replace("High risk patterns detected: ", ""));
+                                if (detectedWords.length() > 0) detectedWords.append("; ");
+                                detectedWords.append(result.reason);
                             }
                         }
                         

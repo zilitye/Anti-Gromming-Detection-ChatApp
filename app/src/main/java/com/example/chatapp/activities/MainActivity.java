@@ -7,14 +7,22 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Base64;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.PopupMenu;
+import android.view.ContextThemeWrapper;
+import android.content.Context;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
+import com.example.chatapp.R;
 import com.example.chatapp.adapters.RecentConversationsAdapter;
 import com.example.chatapp.databinding.ActivityMainBinding;
 import com.example.chatapp.listeners.ConversionListener;
@@ -44,6 +52,7 @@ public class MainActivity extends BaseActivity implements ConversionListener {
     private List<ChatMessage> conversations;
     private RecentConversationsAdapter conversationsAdapter;
     private FirebaseFirestore database;
+    private boolean isSearchVisible = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -89,16 +98,59 @@ public class MainActivity extends BaseActivity implements ConversionListener {
     }
 
     private void setListeners(){
-
-        binding.imageSignOut.setOnClickListener(v -> signOut());
+        binding.imageSearch.setOnClickListener(v -> toggleSearch());
+        binding.imageMore.setOnClickListener(this::showOverflowMenu);
         binding.fabNewChat.setOnClickListener(v ->
                 startActivity(new Intent(getApplicationContext(), UsersActivity.class)));
-        binding.imageSafetyHub.setOnClickListener(v ->
-                startActivity(new Intent(getApplicationContext(), SafetyHubActivity.class)));
+
+        binding.inputSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                conversationsAdapter.filter(s.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
+    }
+
+    private void toggleSearch() {
+        isSearchVisible = !isSearchVisible;
+        binding.layoutSearch.setVisibility(isSearchVisible ? View.VISIBLE : View.GONE);
+        if (!isSearchVisible) {
+            binding.inputSearch.setText("");
+        }
+    }
+
+    private void showOverflowMenu(View anchor) {
+        Context wrapper = new ContextThemeWrapper(this, R.style.PopupMenuTheme);
+        PopupMenu popupMenu = new PopupMenu(wrapper, anchor);
+        popupMenu.getMenu().add(Menu.NONE, 1, 1, R.string.menu_safety_center);
+        popupMenu.getMenu().add(Menu.NONE, 2, 2, R.string.menu_ai_settings);
+        popupMenu.getMenu().add(Menu.NONE, 3, 3, R.string.menu_sign_out);
+        popupMenu.setOnMenuItemClickListener(this::onOverflowItemClicked);
+        popupMenu.show();
+    }
+
+    private boolean onOverflowItemClicked(MenuItem item) {
+        if (item.getItemId() == 1) {
+            startActivity(new Intent(getApplicationContext(), SafetyHubActivity.class));
+            return true;
+        } else if (item.getItemId() == 2) {
+            startActivity(new Intent(getApplicationContext(), AiSettingsActivity.class));
+            return true;
+        } else if (item.getItemId() == 3) {
+            signOut();
+            return true;
+        }
+        return false;
     }
 
     private void loadUserDetails(){
-        binding.textName.setText(preferenceManager.getString(Constants.KEY_NAME));
+        binding.textChatsTitle.setText(R.string.chats_title);
         byte[] bytes = Base64.decode(preferenceManager.getString(Constants.KEY_IMAGE), Base64.DEFAULT);
         Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
         binding.imageProfile.setImageBitmap(bitmap);
@@ -163,15 +215,39 @@ public class MainActivity extends BaseActivity implements ConversionListener {
                             break;
                         }
                     }
+                }else if(documentChange.getType() == DocumentChange.Type.REMOVED){
+                    String senderId = documentChange.getDocument().getString(Constants.KEY_SENDER_ID);
+                    String receiverId = documentChange.getDocument().getString(Constants.KEY_RECEIVER_ID);
+                    String currentUserId = preferenceManager.getString(Constants.KEY_USER_ID);
+                    String partnerId = currentUserId.equals(senderId) ? receiverId : senderId;
+
+                    for(int i=0; i<conversations.size(); i++){
+                        if(conversations.get(i).conversionId != null && conversations.get(i).conversionId.equals(partnerId)){
+                            conversations.remove(i);
+                            break;
+                        }
+                    }
                 }
             }
-            Collections.sort(conversations, (obj1, obj2) -> obj2.dateObject.compareTo(obj1.dateObject));
-            conversationsAdapter.notifyDataSetChanged();
+            Collections.sort(conversations, (obj1, obj2) -> {
+                if (obj1.dateObject == null && obj2.dateObject == null) return 0;
+                if (obj1.dateObject == null) return 1;
+                if (obj2.dateObject == null) return -1;
+                return obj2.dateObject.compareTo(obj1.dateObject);
+            });
+            conversationsAdapter.refresh();
             binding.conversationsRecyclerView.smoothScrollToPosition(0);
-            binding.conversationsRecyclerView.setVisibility(View.VISIBLE);
             binding.progressBar.setVisibility(View.GONE);
+            updateEmptyState();
         }
     };
+
+    private void updateEmptyState() {
+        boolean isEmpty = conversations.isEmpty();
+        binding.conversationsRecyclerView.setVisibility(isEmpty ? View.GONE : View.VISIBLE);
+        binding.layoutEmptyState.setVisibility(isEmpty ? View.VISIBLE : View.GONE);
+    }
+
     private void getToken(){
         FirebaseMessaging.getInstance().getToken().addOnSuccessListener(this::updateToken);
     }

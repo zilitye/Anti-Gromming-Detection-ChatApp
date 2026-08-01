@@ -31,7 +31,9 @@ public class Constants {
     public static final String KEY_IS_FLAGGED = "isFlagged";
     public static final String KEY_RISK_LEVEL = "riskLevel";
     public static final String KEY_FLAGGED_REASON = "flaggedReason";
-    public static final String GEMINI_API_KEY = "AIzaSyA3wfO25k2Db5HVPXnmmjDIhPRGqejX-R8";
+    // The Gemini API key is no longer hardcoded into the app. Each user supplies their
+    // own key via AiSettingsActivity, and it is stored locally under this preference key.
+    public static final String KEY_GEMINI_API_KEY = "geminiApiKey";
     public static final String REMOTE_MSG_AUTHORIZATION = "Authorization";
     public static final String REMOTE_MSG_CONTENT_TYPE = "Content-Type";
     public static final String REMOTE_MSG_DATA = "data";

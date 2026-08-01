@@ -2,7 +2,6 @@ package com.example.chatapp.adapters;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.icu.text.Transliterator;
 import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -14,16 +13,20 @@ import com.example.chatapp.databinding.ItemContainerUserBinding;
 import com.example.chatapp.listeners.UserListener;
 import com.example.chatapp.models.User;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHolder>{
 
-    private final List<User> users;
+    private final List<User> allUsers;
+    private final List<User> displayedUsers = new ArrayList<>();
     private final UserListener userListener;
+    private String currentQuery = "";
 
     public UsersAdapter(List<User> users, UserListener userListener) {
-
-        this.users = users;
+        this.allUsers = users;
+        this.displayedUsers.addAll(users);
         this.userListener = userListener;
     }
 
@@ -40,12 +43,34 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
 
     @Override
     public void onBindViewHolder(@NonNull UserViewHolder holder, int position) {
-        holder.setUserData(users.get(position));
+        holder.setUserData(displayedUsers.get(position));
     }
 
     @Override
     public int getItemCount() {
-        return users.size();
+        return displayedUsers.size();
+    }
+
+    /** Filters the visible list by name or email without losing the original data set. */
+    public void filter(String query) {
+        currentQuery = query == null ? "" : query.trim().toLowerCase(Locale.getDefault());
+        displayedUsers.clear();
+        if (currentQuery.isEmpty()) {
+            displayedUsers.addAll(allUsers);
+        } else {
+            for (User user : allUsers) {
+                boolean nameMatches = user.name != null && user.name.toLowerCase(Locale.getDefault()).contains(currentQuery);
+                boolean emailMatches = user.email != null && user.email.toLowerCase(Locale.getDefault()).contains(currentQuery);
+                if (nameMatches || emailMatches) {
+                    displayedUsers.add(user);
+                }
+            }
+        }
+        notifyDataSetChanged();
+    }
+
+    public boolean isEmpty() {
+        return displayedUsers.isEmpty();
     }
 
     class UserViewHolder extends RecyclerView.ViewHolder{

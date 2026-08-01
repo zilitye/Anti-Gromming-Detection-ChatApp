@@ -8,45 +8,45 @@
     android:background="@color/primary"
     tools:context=".activities.ReportActivity">
 
+    <View
+        android:id="@+id/headerBackground"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@color/macos_accent"
+        app:layout_constraintBottom_toBottomOf="@id/imageBack"
+        app:layout_constraintTop_toTopOf="parent"/>
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/imageBack"
-        android:layout_width="@dimen/_30sdp"
-        android:layout_height="@dimen/_30sdp"
-        android:layout_marginStart="@dimen/_16sdp"
-        android:layout_marginTop="@dimen/_12sdp"
-        android:padding="@dimen/_5sdp"
+        android:layout_width="@dimen/_36sdp"
+        android:layout_height="@dimen/_36sdp"
+        android:layout_marginStart="@dimen/_10sdp"
+        android:layout_marginTop="@dimen/_14sdp"
+        android:layout_marginBottom="@dimen/_14sdp"
+        android:background="@drawable/background_icon"
+        android:padding="@dimen/_7sdp"
         android:src="@drawable/ic_back"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:tint="@color/primary_text"/>
+        app:tint="@color/white"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/_8sdp"
         android:text="@string/safety_report"
-        android:textColor="@color/primary_text"
-        android:textSize="@dimen/_14ssp"
+        android:textColor="@color/white"
+        android:textSize="@dimen/_15ssp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@id/imageBack"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@id/imageBack"
         app:layout_constraintTop_toTopOf="@id/imageBack"/>
-
-    <View
-        android:id="@+id/viewBackground"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginTop="@dimen/_20sdp"
-        android:background="@drawable/background_content_top"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/imageBack"/>
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="@id/viewBackground">
+        app:layout_constraintTop_toBottomOf="@id/headerBackground">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -54,21 +54,38 @@
             android:orientation="vertical"
             android:padding="@dimen/_20sdp">
 
-            <TextView
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/why_flagged"
-                android:textColor="@color/primary_text"
-                android:textSize="@dimen/_16ssp"
-                android:textStyle="bold"/>
+                app:cardBackgroundColor="?attr/colorSurface"
+                app:cardCornerRadius="@dimen/_16sdp"
+                app:cardElevation="0dp"
+                app:strokeColor="@color/divider"
+                app:strokeWidth="1dp">
 
-            <TextView
-                android:id="@+id/textReason"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_10sdp"
-                android:textColor="@color/secondary_text"
-                android:textSize="@dimen/_12ssp"/>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/_16sdp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/why_flagged"
+                        android:textColor="@color/primary_text"
+                        android:textSize="@dimen/_14ssp"
+                        android:textStyle="bold"/>
+
+                    <TextView
+                        android:id="@+id/textReason"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/_8sdp"
+                        android:textColor="@color/secondary_text"
+                        android:textSize="@dimen/_12ssp"/>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
             <TextView
                 android:layout_width="match_parent"
@@ -85,7 +102,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/_5sdp"
                 android:background="@drawable/background_chat_input"
-                android:padding="@dimen/_10sdp"
+                android:padding="@dimen/_12sdp"
                 android:textColor="@color/primary_text"
                 android:textSize="@dimen/_12ssp"/>
 
@@ -93,11 +110,12 @@
                 android:id="@+id/buttonSubmitReport"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/_50sdp"
-                android:layout_marginTop="@dimen/_30sdp"
+                android:layout_marginTop="@dimen/_24sdp"
                 android:text="@string/submit_report"
+                android:textAllCaps="false"
                 android:textColor="@color/white"
                 app:backgroundTint="@color/macos_accent"
-                app:cornerRadius="@dimen/_10sdp"/>
+                app:cornerRadius="@dimen/_12sdp"/>
 
             <TextView
                 android:id="@+id/textSafetyResources"
@@ -105,6 +123,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/_20sdp"
                 android:gravity="center"
+                android:padding="@dimen/_8sdp"
                 android:text="@string/view_resources"
                 android:textColor="@color/macos_accent"
                 android:textSize="@dimen/_12ssp"

@@ -360,14 +360,20 @@ public class ChatActivity extends BaseActivity {
                 receiverUser.token = value.getString(Constants.KEY_FCM_TOKEN);
                 if(receiverUser.image == null){
                     receiverUser.image = value.getString(Constants.KEY_IMAGE);
-                    chatAdapter.setReceiverProfileImage(getBitmapFromEncodedString(receiverUser.image));
+                    Bitmap receiverBitmap = getBitmapFromEncodedString(receiverUser.image);
+                    chatAdapter.setReceiverProfileImage(receiverBitmap);
                     chatAdapter.notifyItemRangeChanged(0, chatMessages.size());
+                    if (receiverBitmap != null) {
+                        binding.imageProfile.setImageBitmap(receiverBitmap);
+                    }
                 }
             }
             if(isReceiverAvailable){
-                binding.textAvailability.setVisibility(View.VISIBLE);
+                binding.textAvailability.setText(R.string.online);
+                binding.textAvailability.setTextColor(0xFFCFEFE8);
             }else{
-                binding.textAvailability.setVisibility(View.GONE);
+                binding.textAvailability.setText(R.string.tap_for_safety_insights);
+                binding.textAvailability.setTextColor(0xFFCFEFE8);
             }
 
         });
@@ -432,6 +438,9 @@ public class ChatActivity extends BaseActivity {
     private void loadReceiverDetails(){
         receiverUser = (User) getIntent().getSerializableExtra(Constants.KEY_USER);
         binding.textName.setText(receiverUser.name);
+        if (receiverUser.image != null) {
+            binding.imageProfile.setImageBitmap(getBitmapFromEncodedString(receiverUser.image));
+        }
     }
 
     private void setListeners(){

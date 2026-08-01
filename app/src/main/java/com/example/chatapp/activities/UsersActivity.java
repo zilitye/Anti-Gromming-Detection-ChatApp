@@ -2,13 +2,9 @@ package com.example.chatapp.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
-
-import androidx.activity.EdgeToEdge;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import com.example.chatapp.R;
 import com.example.chatapp.adapters.UsersAdapter;
@@ -27,6 +23,7 @@ public class UsersActivity extends BaseActivity implements UserListener {
 
     private ActivityUsersBinding binding;
     private PreferenceManager preferenceManager;
+    private UsersAdapter usersAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,8 +37,28 @@ public class UsersActivity extends BaseActivity implements UserListener {
     }
 
     private void setListeners(){
-        binding.imageBack.setOnClickListener(v -> onBackPressed());
+        binding.imageBack.setOnClickListener(v -> getOnBackPressedDispatcher().onBackPressed());
+        binding.inputSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (usersAdapter != null) {
+                    usersAdapter.filter(s.toString());
+                    if (usersAdapter.isEmpty()) {
+                        showErrorMessage();
+                    } else {
+                        binding.textErrorMessage.setVisibility(View.GONE);
+                    }
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
     }
+
     private void getUsers(){
         loading(true);
         FirebaseFirestore database = FirebaseFirestore.getInstance();
@@ -66,7 +83,7 @@ public class UsersActivity extends BaseActivity implements UserListener {
 
                         }
                         if(users.size() > 0){
-                            UsersAdapter usersAdapter = new UsersAdapter(users, this);
+                            usersAdapter = new UsersAdapter(users, this);
                             binding.usersRecyclerView.setAdapter(usersAdapter);
                             binding.usersRecyclerView.setVisibility(View.VISIBLE);
                         }else{
@@ -78,7 +95,7 @@ public class UsersActivity extends BaseActivity implements UserListener {
                 });
     }
     private void showErrorMessage(){
-        binding.textErrorMessage.setText(String.format("%s", "No user available"));
+        binding.textErrorMessage.setText(getString(R.string.no_people_found));
         binding.textErrorMessage.setVisibility(View.VISIBLE);
     }
     private void loading(Boolean isLoading){
