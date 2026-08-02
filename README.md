@@ -37,8 +37,8 @@ pathways, and emotional support.
 
 1. Clone the repository
 ```bash
-git clone https://github.com/your-username/Anti-Gromming-Detection-ChatApp.git
-cd Anti-Gromming-Detection-ChatApp
+git clone https://github.com/zilitye/ChatApp.git
+cd ChatApp
 ```
 
 2. Connect Firebase
