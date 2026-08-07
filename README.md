@@ -1,4 +1,4 @@
-## Anti-Gromming-Detection-ChatApp
+## Anti-Gromming-ChatApp
 
 The significance of this application extends beyond individual protection. By logging flagged 
 incidents to a secure cloud backend (Firebase Firestore), the system creates an auditable record of grooming-related communications that can support institutional reporting, counselling referrals, and policy development. The Risk Dashboard feature allows users to visualise the cumulative risk profile of a conversation over time, transforming individual message-level detection into a holistic conversation-level safety assessment.
