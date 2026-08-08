@@ -21,7 +21,10 @@
     <string name="chat_with">Chat with %1$s</string>
     <string name="safety_report">Safety Report</string>
     <string name="why_flagged">Why was this flagged?</string>
+    <string name="flagged_content">Flagged Content</string>
     <string name="your_message">Conversation Context</string>
+    <string name="provide_feedback">Provide Feedback (Optional)</string>
+    <string name="feedback_hint">Explain if this was flagged wrongly...</string>
     <string name="submit_report">Submit Official Report</string>
     <string name="view_resources">View Safety Resources</string>
     <string name="safety_hub">Safety Assistant</string>
@@ -68,4 +71,6 @@
     <string name="policy_analyzer">Policy Analyzer</string>
     <string name="report_assistant">Report Assistant</string>
     <string name="safety_resources">Safety Resources</string>
+    <string name="flagged_wrongly">Flagged wrongly?</string>
+    <string name="grooming_warning_simple">This message contains language that could be associated with grooming behavior. Are you sure you want to send it?</string>
 </resources>

@@ -5,9 +5,8 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/primary"
+    android:background="@color/white"
     tools:context=".activities.ReportActivity">
-
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/imageBack"
@@ -26,7 +25,7 @@
         android:layout_height="wrap_content"
         android:text="@string/safety_report"
         android:textColor="@color/primary_text"
-        android:textSize="@dimen/_14ssp"
+        android:textSize="@dimen/_12ssp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@id/imageBack"
         app:layout_constraintEnd_toEndOf="parent"
@@ -34,19 +33,18 @@
         app:layout_constraintTop_toTopOf="@id/imageBack"/>
 
     <View
-        android:id="@+id/viewBackground"
+        android:id="@+id/viewSeparator"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginTop="@dimen/_20sdp"
-        android:background="@drawable/background_content_top"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/imageBack"/>
+        android:layout_height="1dp"
+        android:layout_marginTop="@dimen/_12sdp"
+        android:background="@color/separator"
+        app:layout_constraintTop_toBottomOf="@id/imageBack" />
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="@id/viewBackground">
+        app:layout_constraintBottom_toTopOf="@id/buttonSubmitReport"
+        app:layout_constraintTop_toBottomOf="@id/viewSeparator">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -54,26 +52,35 @@
             android:orientation="vertical"
             android:padding="@dimen/_20sdp">
 
-            <TextView
+            <LinearLayout
+                android:id="@+id/layoutReason"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/why_flagged"
-                android:textColor="@color/primary_text"
-                android:textSize="@dimen/_16ssp"
-                android:textStyle="bold"/>
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/why_flagged"
+                    android:textColor="@color/primary_text"
+                    android:textSize="@dimen/_14ssp"
+                    android:textStyle="bold"/>
+
+                <TextView
+                    android:id="@+id/textReason"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_8sdp"
+                    android:textColor="@color/secondary_text"
+                    android:textSize="@dimen/_11ssp"/>
+
+            </LinearLayout>
 
             <TextView
-                android:id="@+id/textReason"
+                android:id="@+id/headerContext"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_10sdp"
-                android:textColor="@color/secondary_text"
-                android:textSize="@dimen/_12ssp"/>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_20sdp"
+                android:layout_marginTop="@dimen/_24sdp"
                 android:text="@string/your_message"
                 android:textColor="@color/primary_text"
                 android:textSize="@dimen/_14ssp"
@@ -83,34 +90,55 @@
                 android:id="@+id/textMessage"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_5sdp"
-                android:background="@drawable/background_chat_input"
-                android:padding="@dimen/_10sdp"
+                android:layout_marginTop="@dimen/_8sdp"
+                android:background="@drawable/background_chat_input_refined"
+                android:minHeight="@dimen/_40sdp"
+                android:padding="@dimen/_16sdp"
                 android:textColor="@color/primary_text"
-                android:textSize="@dimen/_12ssp"/>
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/buttonSubmitReport"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/_50sdp"
-                android:layout_marginTop="@dimen/_30sdp"
-                android:text="@string/submit_report"
-                android:textColor="@color/white"
-                app:backgroundTint="@color/macos_accent"
-                app:cornerRadius="@dimen/_10sdp"/>
+                android:textSize="@dimen/_11ssp"
+                android:lineSpacingExtra="@dimen/_2sdp"/>
 
             <TextView
-                android:id="@+id/textSafetyResources"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_20sdp"
-                android:gravity="center"
-                android:text="@string/view_resources"
-                android:textColor="@color/macos_accent"
-                android:textSize="@dimen/_12ssp"
+                android:layout_marginTop="@dimen/_24sdp"
+                android:text="@string/provide_feedback"
+                android:textColor="@color/primary_text"
+                android:textSize="@dimen/_14ssp"
                 android:textStyle="bold"/>
+
+            <EditText
+                android:id="@+id/inputFeedback"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_8sdp"
+                android:background="@drawable/background_chat_input_refined"
+                android:hint="@string/feedback_hint"
+                android:importantForAutofill="no"
+                android:inputType="textMultiLine"
+                android:minHeight="@dimen/_80sdp"
+                android:gravity="top"
+                android:padding="@dimen/_12sdp"
+                android:textColor="@color/primary_text"
+                android:textColorHint="@color/secondary_text"
+                android:textSize="@dimen/_11ssp"/>
 
         </LinearLayout>
     </ScrollView>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/buttonSubmitReport"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_40sdp"
+        android:layout_marginHorizontal="@dimen/_20sdp"
+        android:layout_marginBottom="@dimen/_20sdp"
+        android:text="@string/submit_report"
+        android:textColor="@color/white"
+        android:textSize="@dimen/_10ssp"
+        android:textAllCaps="true"
+        android:textStyle="bold"
+        app:backgroundTint="@color/macos_accent"
+        app:cornerRadius="@dimen/_20sdp"
+        app:layout_constraintBottom_toBottomOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

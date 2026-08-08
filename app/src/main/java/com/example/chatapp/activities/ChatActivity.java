@@ -159,59 +159,71 @@ public class ChatActivity extends BaseActivity {
     }
 
     private void showMediumRiskWarning(GroomingDetector.DetectionResult result) {
-        new androidx.appcompat.app.AlertDialog.Builder(this)
-                .setTitle(R.string.safety_warning)
-                .setMessage(getString(R.string.grooming_warning_message, result.reason))
-                .setPositiveButton(R.string.send_anyway, (dialog, which) -> performSendMessage(binding.inputMessage.getText().toString(), true, result.score, result.riskLevel.name(), result.reason))
-                .setNegativeButton(R.string.cancel, null)
-                .show();
+        String messageText = binding.inputMessage.getText().toString();
+        View dialogView = getLayoutInflater().inflate(R.layout.layout_dialog_safety_warning, null);
+        androidx.appcompat.app.AlertDialog dialog = new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setView(dialogView)
+                .create();
+
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT));
+        }
+
+        dialogView.findViewById(R.id.buttonCancel).setOnClickListener(v -> dialog.dismiss());
+
+        dialogView.findViewById(R.id.buttonSendAnyway).setOnClickListener(v -> {
+            performSendMessage(messageText, true, result.score, result.riskLevel.name(), result.reason);
+            dialog.dismiss();
+        });
+
+        dialogView.findViewById(R.id.textFlaggedWrongly).setOnClickListener(v -> {
+            Intent intent = new Intent(getApplicationContext(), ReportActivity.class);
+            intent.putExtra(Constants.KEY_USER_ID, receiverUser.id);
+            intent.putExtra(Constants.KEY_RISK_SCORE, result.score);
+            intent.putExtra(Constants.KEY_RISK_LEVEL, result.reason);
+            intent.putExtra(Constants.KEY_MESSAGE, messageText);
+            startActivity(intent);
+            dialog.dismiss();
+        });
+
+        dialog.show();
     }
 
     private void showHighRiskAlert(GroomingDetector.DetectionResult result) {
         String blockedMessage = binding.inputMessage.getText().toString();
-        new androidx.appcompat.app.AlertDialog.Builder(this)
-                .setTitle(R.string.security_alert)
-                .setMessage(R.string.high_risk_alert_message)
-                .setPositiveButton(R.string.report_get_help, (dialog, which) -> {
-                    logHighRiskIncident(result);
-
-                    // Build Conversation Context - ONLY include sender's (current user) messages
-                    String currentUserId = preferenceManager.getString(Constants.KEY_USER_ID);
-                    List<String> senderMessages = new ArrayList<>();
-                    StringBuilder contextBuilder = new StringBuilder();
-                    for (ChatMessage chatMessage : chatMessages) {
-                        if (chatMessage.senderId.equals(currentUserId)) {
-                            senderMessages.add(chatMessage.message);
-                            contextBuilder.append(chatMessage.message).append("\n");
-                        }
-                    }
-
-                    // Re-scoring history runs the (possibly NLP-based) detector on
-                    // each past message, so it's done off the main thread.
-                    GroomingDetector.analyzeBatchAsync(senderMessages, (results, totalScore) -> {
-                        Intent intent = new Intent(getApplicationContext(), ReportActivity.class);
-                        intent.putExtra(Constants.KEY_USER_ID, receiverUser.id);
-                        intent.putExtra(Constants.KEY_RISK_SCORE, totalScore + result.score);
-                        intent.putExtra(Constants.KEY_RISK_LEVEL, result.reason);
-                        intent.putExtra(Constants.KEY_MESSAGE, contextBuilder.toString() + "Blocked: " + blockedMessage);
-                        startActivity(intent);
-                    });
-                })
-                .setNegativeButton(R.string.close, (dialog, which) -> logHighRiskIncident(result))
-                .show();
-    }
-
-    private void logHighRiskIncident(GroomingDetector.DetectionResult result) {
-        HashMap<String, Object> incident = new HashMap<>();
-        incident.put(Constants.KEY_SENDER_ID, preferenceManager.getString(Constants.KEY_USER_ID));
-        incident.put(Constants.KEY_RECEIVER_ID, receiverUser.id);
-        incident.put(Constants.KEY_MESSAGE, binding.inputMessage.getText().toString());
-        incident.put(Constants.KEY_TIMESTAMP, new Date());
-        incident.put(Constants.KEY_IS_FLAGGED, true);
-        incident.put(Constants.KEY_RISK_SCORE, result.score);
-        incident.put(Constants.KEY_RISK_LEVEL, result.riskLevel.name());
-        database.collection("flagged_incidents").add(incident);
         binding.inputMessage.setText(null);
+        View dialogView = getLayoutInflater().inflate(R.layout.layout_dialog_safety_warning, null);
+        androidx.appcompat.app.AlertDialog dialog = new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setView(dialogView)
+                .create();
+
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT));
+        }
+
+        android.widget.TextView textTitle = dialogView.findViewById(R.id.textTitle);
+        android.widget.TextView textWarning = dialogView.findViewById(R.id.textWarning);
+        com.google.android.material.button.MaterialButton buttonClose = dialogView.findViewById(R.id.buttonCancel);
+        com.google.android.material.button.MaterialButton buttonSendAnyway = dialogView.findViewById(R.id.buttonSendAnyway);
+
+        textTitle.setText(R.string.security_alert);
+        textWarning.setText(R.string.high_risk_alert_message);
+        buttonClose.setText(R.string.close);
+        buttonSendAnyway.setVisibility(View.GONE);
+
+        buttonClose.setOnClickListener(v -> dialog.dismiss());
+
+        dialogView.findViewById(R.id.textFlaggedWrongly).setOnClickListener(v -> {
+            Intent intent = new Intent(getApplicationContext(), ReportActivity.class);
+            intent.putExtra(Constants.KEY_USER_ID, receiverUser.id);
+            intent.putExtra(Constants.KEY_RISK_SCORE, result.score);
+            intent.putExtra(Constants.KEY_RISK_LEVEL, result.reason);
+            intent.putExtra(Constants.KEY_MESSAGE, "Blocked: " + blockedMessage);
+            startActivity(intent);
+            dialog.dismiss();
+        });
+
+        dialog.show();
     }
 
     private void performSendMessage(String messageText, boolean isFlagged, int riskScore, String riskLevel, String flaggedReason) {
@@ -485,8 +497,22 @@ public class ChatActivity extends BaseActivity {
         binding.imageShield.setOnClickListener(v ->
                 startActivity(new Intent(getApplicationContext(), SafetyHubActivity.class)));
         binding.imageAlert.setOnClickListener(v -> {
+            String currentUserId = preferenceManager.getString(Constants.KEY_USER_ID);
+            List<String> senderMessages = new ArrayList<>();
+            int count = 0;
+            for (int i = chatMessages.size() - 1; i >= 0 && count < 5; i--) {
+                if (chatMessages.get(i).senderId.equals(currentUserId)) {
+                    senderMessages.add(chatMessages.get(i).message);
+                    count++;
+                }
+            }
+            java.util.Collections.reverse(senderMessages);
+            StringBuilder contextBuilder = new StringBuilder();
+            for (String m : senderMessages) contextBuilder.append(m).append("\n");
+
             Intent intent = new Intent(getApplicationContext(), ReportActivity.class);
             intent.putExtra(Constants.KEY_USER_ID, receiverUser.id);
+            intent.putExtra(Constants.KEY_MESSAGE, contextBuilder.toString());
             startActivity(intent);
         });
         binding.imageProfileHeader.setOnClickListener(v -> openProfile());

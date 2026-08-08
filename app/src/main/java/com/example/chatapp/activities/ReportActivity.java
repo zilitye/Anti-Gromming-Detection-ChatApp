@@ -1,7 +1,9 @@
 package com.example.chatapp.activities;
 
 import android.os.Bundle;
+import android.view.View;
 
+import com.example.chatapp.R;
 import com.example.chatapp.databinding.ActivityReportBinding;
 import com.example.chatapp.utilities.Constants;
 import com.example.chatapp.utilities.PreferenceManager;
@@ -40,16 +42,23 @@ public class ReportActivity extends BaseActivity {
         String reason = getIntent().getStringExtra(Constants.KEY_RISK_LEVEL);
         String message = getIntent().getStringExtra(Constants.KEY_MESSAGE);
         
-        binding.textReason.setText(reason);
+        if (reason != null && !reason.trim().isEmpty()) {
+            binding.textReason.setText(reason);
+            binding.layoutReason.setVisibility(View.VISIBLE);
+            binding.headerContext.setText(R.string.flagged_content);
+        } else {
+            binding.layoutReason.setVisibility(View.GONE);
+            binding.headerContext.setText(R.string.your_message);
+        }
+        
         binding.textMessage.setText(message);
     }
 
     private void setListeners() {
         binding.imageBack.setOnClickListener(v -> getOnBackPressedDispatcher().onBackPressed());
         binding.buttonSubmitReport.setOnClickListener(v -> submitReport());
-        binding.textSafetyResources.setOnClickListener(v -> {
-            showToast("Opening Safety Resources...");
-        });
+        
+        binding.inputFeedback.setOnFocusChangeListener((v, hasFocus) -> binding.inputFeedback.setActivated(hasFocus));
     }
 
     private void submitReport() {
@@ -60,7 +69,14 @@ public class ReportActivity extends BaseActivity {
         incident.put(Constants.KEY_TIMESTAMP, new Date());
         incident.put(Constants.KEY_IS_FLAGGED, true);
         incident.put(Constants.KEY_RISK_SCORE, riskScore);
-        incident.put(Constants.KEY_RISK_LEVEL, riskScore >= 50 ? "HIGH" : (riskScore >= 20 ? "MEDIUM" : "SAFE"));
+        
+        String feedback = binding.inputFeedback.getText().toString().trim();
+        if (!feedback.isEmpty()) {
+            incident.put("userFeedback", feedback);
+        }
+
+        String reason = binding.textReason.getText().toString();
+        incident.put(Constants.KEY_RISK_LEVEL, reason.isEmpty() ? "MANUAL" : reason);
         
         database.collection("flagged_incidents").add(incident)
                 .addOnSuccessListener(documentReference -> {
