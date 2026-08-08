@@ -1,19 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="primary">#F6F6F6</color>
-    <color name="primary_dark">#EBEBEB</color>
+    <color name="primary">#FFFFFF</color>
+    <color name="primary_dark">#F8F8F8</color>
     <color name="primary_text">#1D1D1F</color>
     <color name="secondary_text">#86868B</color>
     <color name="white">#FFFFFFFF</color>
     <color name="input_background">#FFFFFF</color>
-    <color name="icon_background">#EBEBEB</color>
+    <color name="icon_background">#F2F2F7</color>
     <color name="error">#FF3B30</color>
-    <color name="receive_message_background">#E9E9EB</color>
+    <color name="receive_message_background">#F2F2F7</color>
     <color name="receive_message_text">#1D1D1F</color>
     <color name="sent_message_background">#007AFF</color>
     <color name="sent_message_text">#FFFFFF</color>
     <color name="card_background">#FFFFFF</color>
     <color name="macos_accent">#007AFF</color>
+    <color name="separator">#E5E5EA</color>
     <color name="macos_traffic_red">#FF5F57</color>
     <color name="macos_traffic_yellow">#FEBC2E</color>
     <color name="macos_traffic_green">#28C840</color>

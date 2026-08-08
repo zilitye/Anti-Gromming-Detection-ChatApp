@@ -3,52 +3,53 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:padding="@dimen/_8sdp">
+    android:paddingHorizontal="@dimen/_12sdp"
+    android:paddingVertical="@dimen/_8sdp"
+    android:background="?attr/selectableItemBackground">
 
     <com.makeramen.roundedimageview.RoundedImageView
         android:id="@+id/imageProfile"
         android:layout_width="@dimen/_35sdp"
         android:layout_height="@dimen/_35sdp"
-        android:background="@drawable/background_image"
         android:scaleType="centerCrop"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:riv_oval="true"/>
 
-    <View
-        android:id="@+id/viewSupporter"
-        android:layout_width="1dp"
-        android:layout_height="1dp"
-        app:layout_constraintBottom_toBottomOf="@+id/imageProfile"
-        app:layout_constraintStart_toEndOf="@+id/imageProfile"
-        app:layout_constraintTop_toTopOf="@+id/imageProfile"/>
-    
     <TextView
         android:id="@+id/textName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/_8sdp"
+        android:layout_marginStart="@dimen/_10sdp"
         android:layout_marginEnd="@dimen/_8sdp"
         android:ellipsize="end"
         android:maxLines="1"
         android:textColor="@color/primary_text"
         android:textSize="@dimen/_13ssp"
-        app:layout_constraintBottom_toTopOf="@+id/viewSupporter"
+        app:layout_constraintEnd_toStartOf="@id/textTimestamp"
+        app:layout_constraintStart_toEndOf="@id/imageProfile"
+        app:layout_constraintTop_toTopOf="@id/imageProfile" />
+
+    <TextView
+        android:id="@+id/textTimestamp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/secondary_text"
+        android:textSize="@dimen/_9ssp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/imageProfile"/>
+        app:layout_constraintTop_toTopOf="@id/textName" />
 
     <TextView
         android:id="@+id/textRecentMessage"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/_8sdp"
-        android:layout_marginEnd="@dimen/_8sdp"
+        android:layout_marginTop="@dimen/_1sdp"
         android:ellipsize="end"
         android:maxLines="1"
         android:textColor="@color/secondary_text"
-        android:textSize="@dimen/_12ssp"
+        android:textSize="@dimen/_11ssp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/imageProfile"
-        app:layout_constraintTop_toBottomOf="@+id/viewSupporter"/>
+        app:layout_constraintStart_toStartOf="@id/textName"
+        app:layout_constraintTop_toBottomOf="@id/textName" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

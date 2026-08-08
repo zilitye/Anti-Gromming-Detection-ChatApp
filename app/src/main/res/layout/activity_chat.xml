@@ -6,33 +6,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
-    android:background="@color/primary"
+    android:background="@color/white"
     tools:context=".activities.ChatActivity">
-
-
-    <View
-        android:id="@+id/viewBackground"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginBottom="@dimen/_16sdp"
-        android:background="@drawable/background_content_top"
-        app:layout_constraintBottom_toTopOf="@id/layoutSend"
-        app:layout_constraintTop_toTopOf="parent"/>
-
-    <View
-        android:id="@+id/headerBackground"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:background="@color/primary"
-        app:layout_constraintBottom_toTopOf="@id/viewSupporter"
-        app:layout_constraintTop_toTopOf="parent"/>
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/imageBack"
         android:layout_width="@dimen/_30sdp"
         android:layout_height="@dimen/_30sdp"
         android:layout_marginStart="@dimen/_16sdp"
-        android:layout_marginLeft="@dimen/_16sdp"
         android:layout_marginTop="@dimen/_12sdp"
         android:padding="@dimen/_5sdp"
         android:src="@drawable/ic_back"
@@ -40,126 +21,170 @@
         app:layout_constraintTop_toTopOf="parent"
         app:tint="@color/primary_text"/>
 
-    <androidx.appcompat.widget.AppCompatImageView
-        android:id="@+id/imageInfo"
-        android:layout_width="@dimen/_30sdp"
-        android:layout_height="@dimen/_30sdp"
-        android:layout_marginTop="@dimen/_12sdp"
-        android:layout_marginEnd="@dimen/_16sdp"
-        android:layout_marginRight="@dimen/_16sdp"
-        android:padding="@dimen/_4sdp"
-        android:src="@drawable/ic_info"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:tint="@color/primary_text"/>
+    <com.makeramen.roundedimageview.RoundedImageView
+        android:id="@+id/imageProfileHeader"
+        android:layout_width="@dimen/_24sdp"
+        android:layout_height="@dimen/_24sdp"
+        android:layout_marginStart="@dimen/_8sdp"
+        android:scaleType="centerCrop"
+        app:layout_constraintBottom_toBottomOf="@id/imageBack"
+        app:layout_constraintStart_toEndOf="@id/imageBack"
+        app:layout_constraintTop_toTopOf="@id/imageBack"
+        app:riv_oval="true" />
 
     <TextView
         android:id="@+id/textName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/_8sdp"
-        android:layout_marginEnd="@dimen/_8sdp"
+        android:layout_marginEnd="@dimen/_4sdp"
         android:ellipsize="end"
-        android:gravity="center"
         android:maxLines="1"
         android:textColor="@color/primary_text"
-        android:textSize="@dimen/_14ssp"
+        android:textSize="@dimen/_12ssp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@+id/imageBack"
-        app:layout_constraintEnd_toStartOf="@+id/imageInfo"
-        app:layout_constraintStart_toEndOf="@+id/imageBack"
-        app:layout_constraintTop_toTopOf="@+id/imageBack"/>
+        app:layout_constraintBottom_toTopOf="@id/textEncryptionStatus"
+        app:layout_constraintEnd_toStartOf="@+id/imageShield"
+        app:layout_constraintStart_toEndOf="@+id/imageProfileHeader"
+        app:layout_constraintTop_toTopOf="@+id/imageProfileHeader"
+        app:layout_constraintVertical_chainStyle="packed" />
+
+    <TextView
+        android:id="@+id/textEncryptionStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/unencrypted"
+        android:textColor="@color/secondary_text"
+        android:textSize="@dimen/_8ssp"
+        app:layout_constraintBottom_toBottomOf="@id/imageProfileHeader"
+        app:layout_constraintStart_toStartOf="@id/textName"
+        app:layout_constraintTop_toBottomOf="@id/textName" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/imageShield"
+        android:layout_width="@dimen/_24sdp"
+        android:layout_height="@dimen/_24sdp"
+        android:layout_marginEnd="@dimen/_12sdp"
+        android:padding="@dimen/_4sdp"
+        android:src="@drawable/ic_shield"
+        app:layout_constraintBottom_toBottomOf="@id/imageBack"
+        app:layout_constraintEnd_toStartOf="@id/imageAlert"
+        app:layout_constraintTop_toTopOf="@id/imageBack"
+        app:tint="@color/secondary_text" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/imageAlert"
+        android:layout_width="@dimen/_24sdp"
+        android:layout_height="@dimen/_24sdp"
+        android:layout_marginEnd="@dimen/_16sdp"
+        android:padding="@dimen/_4sdp"
+        android:src="@drawable/ic_warning"
+        app:layout_constraintBottom_toBottomOf="@id/imageBack"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/imageBack"
+        app:tint="@color/secondary_text" />
 
     <View
-        android:id="@+id/viewSupporter"
+        android:id="@+id/viewSeparator"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/primary"
         android:layout_marginTop="@dimen/_12sdp"
-        app:layout_constraintTop_toBottomOf="@+id/imageBack"/>
-
-
+        android:background="@color/separator"
+        app:layout_constraintTop_toBottomOf="@id/imageBack" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/chatRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:clipToOutline="false"
+        android:clipToPadding="false"
         android:orientation="vertical"
         android:overScrollMode="never"
-        android:padding="@dimen/_20sdp"
-        app:stackFromEnd="true"
+        android:padding="@dimen/_8sdp"
         android:visibility="gone"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_constraintBottom_toBottomOf="@+id/viewBackground"
-        app:layout_constraintTop_toBottomOf="@+id/viewSupporter"/>
+        app:layout_constraintBottom_toTopOf="@id/layoutBottom"
+        app:layout_constraintTop_toBottomOf="@id/viewSeparator"
+        app:stackFromEnd="true" />
 
     <ProgressBar
         android:id="@+id/progressBar"
         android:layout_width="@dimen/_25sdp"
         android:layout_height="@dimen/_25sdp"
-        app:layout_constraintBottom_toBottomOf="@+id/viewBackground"
-        app:layout_constraintEnd_toEndOf="@+id/viewBackground"
-        app:layout_constraintStart_toStartOf="@+id/viewBackground"
-        app:layout_constraintTop_toTopOf="@+id/viewBackground"/>
-
-    <FrameLayout
-        android:id="@+id/layoutSend"
-        android:layout_width="@dimen/_40sdp"
-        android:layout_height="@dimen/_40sdp"
-        android:layout_marginEnd="@dimen/_16sdp"
-        android:layout_marginRight="@dimen/_16sdp"
-        android:layout_marginBottom="@dimen/_12sdp"
-        android:background="@drawable/background_send_button"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-        
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-
-        <androidx.appcompat.widget.AppCompatImageView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginStart="@dimen/_4sdp"
-            android:layout_marginLeft="@dimen/_4sdp"
-            android:padding="@dimen/_8sdp"
-            android:src="@drawable/ic_send"
-            app:tint="@color/white"/>
-
-    </FrameLayout>
-
-    <EditText
-        android:id="@+id/inputMessage"
-        android:layout_width="0dp"
-        android:layout_height="@dimen/_40sdp"
-        android:layout_marginStart="@dimen/_16sdp"
-        android:layout_marginLeft="@dimen/_16sdp"
-        android:layout_marginEnd="@dimen/_8sdp"
-        android:layout_marginRight="@dimen/_8sdp"
-        android:layout_marginBottom="@dimen/_12sdp"
-        android:background="@drawable/background_chat_input"
-        android:hint="@string/type_a_message"
-        android:imeOptions="actionDone"
-        android:importantForAutofill="no"
-        android:inputType="text"
-        android:paddingStart="@dimen/_16sdp"
-        android:paddingEnd="@dimen/_16sdp"
-        android:textColor="@color/primary_text"
-        android:textColorHint="@color/secondary_text"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/layoutSend"
-        app:layout_constraintStart_toStartOf="parent"/>
-
-    <TextView
-        android:id="@+id/textAvailability"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layoutBottom"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@+id/viewSupporter"
-        android:background="@color/green"
-        android:textSize="@dimen/_10ssp"
-        android:text="@string/online"
-        android:gravity="center"
-        android:textColor="@color/white"
-        android:padding="@dimen/_2sdp"
-        android:visibility="gone"/>
+        android:paddingHorizontal="@dimen/_16sdp"
+        android:paddingVertical="@dimen/_12sdp"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/layoutInputContainer"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/background_chat_input_refined"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <EditText
+                android:id="@+id/inputMessage"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:background="@null"
+                android:hint="@string/unencrypted_message"
+                android:imeOptions="actionDone"
+                android:importantForAutofill="no"
+                android:inputType="textMultiLine"
+                android:maxLines="4"
+                android:minHeight="@dimen/_30sdp"
+                android:paddingStart="@dimen/_16sdp"
+                android:paddingTop="@dimen/_6sdp"
+                android:paddingEnd="@dimen/_40sdp"
+                android:paddingBottom="@dimen/_6sdp"
+                android:textColor="@color/primary_text"
+                android:textColorHint="@color/secondary_text"
+                android:textSize="@dimen/_11ssp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <FrameLayout
+                android:id="@+id/layoutSend"
+                android:layout_width="@dimen/_24sdp"
+                android:layout_height="@dimen/_24sdp"
+                android:layout_marginEnd="@dimen/_4sdp"
+                android:background="@drawable/background_send_button_refined"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="@dimen/_4sdp"
+                    android:src="@drawable/ic_arrow_up"
+                    app:tint="@color/white" />
+            </FrameLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <TextView
+            android:id="@+id/textAvailability"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -6,19 +6,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
-    android:background="@color/primary"
+    android:background="@color/white"
     tools:context=".activities.UsersActivity">
-
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/imageBack"
         android:layout_width="@dimen/_30sdp"
         android:layout_height="@dimen/_30sdp"
         android:layout_marginStart="@dimen/_16sdp"
-        android:layout_marginLeft="@dimen/_16sdp"
         android:layout_marginTop="@dimen/_12sdp"
-        android:background="@drawable/background_icon"
-        android:padding="@dimen/_6sdp"
+        android:padding="@dimen/_5sdp"
         android:src="@drawable/ic_back"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -33,47 +30,50 @@
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@+id/imageBack"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/imageBack"/>
 
-    <FrameLayout
+    <View
+        android:id="@+id/viewSeparator"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="@dimen/_12sdp"
+        android:background="@color/separator"
+        app:layout_constraintTop_toBottomOf="@id/imageBack" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/usersRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="@dimen/_16sdp"
-        android:background="@drawable/background_content_bottom"
+        android:clipToPadding="false"
+        android:orientation="vertical"
+        android:overScrollMode="never"
+        android:padding="@dimen/_8sdp"
+        android:visibility="gone"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageBack">
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/usersRecyclerView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:clipToPadding="false"
-            android:orientation="vertical"
-            android:overScrollMode="never"
-            android:padding="@dimen/_20sdp"
-            android:visibility="gone"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
+        app:layout_constraintTop_toBottomOf="@id/viewSeparator"/>
         
-        <ProgressBar
-            android:id="@+id/progressBar"
-            android:layout_width="@dimen/_25sdp"
-            android:layout_height="@dimen/_25sdp"
-            android:layout_gravity="center"/>
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="@dimen/_25sdp"
+        android:layout_height="@dimen/_25sdp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/viewSeparator"/>
 
-        <TextView
-            android:id="@+id/textErrorMessage"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginStart="@dimen/_24sdp"
-            android:layout_marginEnd="@dimen/_24sdp"
-            android:gravity="center"
-            android:textColor="@color/error"
-            android:textSize="@dimen/_12ssp"
-            android:visibility="gone"/>
-
-    </FrameLayout>
-
-
+    <TextView
+        android:id="@+id/textErrorMessage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/_24sdp"
+        android:layout_marginEnd="@dimen/_24sdp"
+        android:gravity="center"
+        android:textColor="@color/error"
+        android:textSize="@dimen/_12ssp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/viewSeparator"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

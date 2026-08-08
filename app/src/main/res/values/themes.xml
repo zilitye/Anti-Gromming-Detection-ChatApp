@@ -1,17 +1,26 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
     <style name="Theme.ChatApp" parent="Theme.MaterialComponents.Light.NoActionBar">
-        <item name="colorPrimary">@color/primary</item>
-        <item name="android:statusBarColor">@color/primary</item>
+        <item name="colorPrimary">@color/white</item>
+        <item name="android:statusBarColor">@color/white</item>
         <item name="android:windowLightStatusBar">true</item>
-        <item name="android:colorBackground">@color/primary</item>
-        <item name="colorSurface">@color/card_background</item>
+        <item name="android:colorBackground">@color/white</item>
+        <item name="colorSurface">@color/white</item>
         <item name="alertDialogTheme">@style/AlertDialogTheme</item>
     </style>
 
     <style name="AlertDialogTheme" parent="Theme.MaterialComponents.Light.Dialog.Alert">
         <item name="colorPrimary">@color/macos_accent</item>
         <item name="colorAccent">@color/macos_accent</item>
+    </style>
+
+    <style name="CustomPopupMenu" parent="Widget.AppCompat.PopupMenu">
+        <item name="android:popupBackground">@drawable/background_popup</item>
+    </style>
+
+    <style name="PopupAnimation">
+        <item name="android:windowEnterAnimation">@anim/popup_enter</item>
+        <item name="android:windowExitAnimation">@anim/popup_exit</item>
     </style>
 
 </resources>

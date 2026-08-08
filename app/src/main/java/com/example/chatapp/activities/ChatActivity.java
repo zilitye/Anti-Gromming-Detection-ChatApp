@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Base64;
 import android.view.View;
 import android.widget.Toast;
@@ -76,7 +78,19 @@ public class ChatActivity extends BaseActivity {
         loadReceiverDetails();
         init();
         listenMessages();
+        setupKeyboardListener();
+    }
 
+    private void setupKeyboardListener() {
+        binding.chatRecyclerView.addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
+            if (bottom < oldBottom) {
+                binding.chatRecyclerView.postDelayed(() -> {
+                    if (!chatMessages.isEmpty()) {
+                        binding.chatRecyclerView.smoothScrollToPosition(chatMessages.size());
+                    }
+                }, 100);
+            }
+        });
     }
 
     private void init(){
@@ -88,11 +102,18 @@ public class ChatActivity extends BaseActivity {
         chatAdapter = new ChatAdapter(
                 chatMessages,
                 getBitmapFromEncodedString(receiverUser.image),
-                preferenceManager.getString(Constants.KEY_USER_ID)
+                preferenceManager.getString(Constants.KEY_USER_ID),
+                receiverUser,
+                this::openProfile
         );
         binding.chatRecyclerView.setAdapter(chatAdapter);
         database = FirebaseFirestore.getInstance();
+    }
 
+    private void openProfile() {
+        Intent intent = new Intent(getApplicationContext(), ProfileActivity.class);
+        intent.putExtra(Constants.KEY_USER, receiverUser);
+        startActivity(intent);
     }
     private Bitmap getBitmapFromEncodedString(String encodedImage){
         if(encodedImage != null){
@@ -439,7 +460,7 @@ public class ChatActivity extends BaseActivity {
             Collections.sort(chatMessages, (obj1, obj2) -> obj1.dateObject.compareTo(obj2.dateObject));
             chatAdapter.notifyDataSetChanged();
             if (!chatMessages.isEmpty()) {
-                binding.chatRecyclerView.smoothScrollToPosition(chatMessages.size() - 1);
+                binding.chatRecyclerView.smoothScrollToPosition(chatMessages.size());
             }
             binding.chatRecyclerView.setVisibility(View.VISIBLE);
         }
@@ -452,17 +473,44 @@ public class ChatActivity extends BaseActivity {
     private void loadReceiverDetails(){
         receiverUser = (User) getIntent().getSerializableExtra(Constants.KEY_USER);
         binding.textName.setText(receiverUser.name);
+        if (receiverUser.image != null) {
+            binding.imageProfileHeader.setImageBitmap(getBitmapFromEncodedString(receiverUser.image));
+        }
     }
 
     private void setListeners(){
 
         binding.imageBack.setOnClickListener(v -> getOnBackPressedDispatcher().onBackPressed());
         binding.layoutSend.setOnClickListener(v -> sendMessage());
-        binding.imageInfo.setOnClickListener(v -> {
-            android.content.Intent intent = new android.content.Intent(getApplicationContext(), RiskDashboardActivity.class);
+        binding.imageShield.setOnClickListener(v ->
+                startActivity(new Intent(getApplicationContext(), SafetyHubActivity.class)));
+        binding.imageAlert.setOnClickListener(v -> {
+            Intent intent = new Intent(getApplicationContext(), ReportActivity.class);
             intent.putExtra(Constants.KEY_USER_ID, receiverUser.id);
-            intent.putExtra(Constants.KEY_NAME, receiverUser.name);
             startActivity(intent);
+        });
+        binding.imageProfileHeader.setOnClickListener(v -> openProfile());
+        binding.textName.setOnClickListener(v -> openProfile());
+
+        binding.inputMessage.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (s.toString().trim().isEmpty()) {
+                    binding.layoutSend.setVisibility(View.GONE);
+                } else {
+                    binding.layoutSend.setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
+
+        binding.inputMessage.setOnFocusChangeListener((v, hasFocus) -> {
+            binding.layoutInputContainer.setActivated(hasFocus);
         });
     }
 

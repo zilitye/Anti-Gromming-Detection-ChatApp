@@ -4,6 +4,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
+import android.view.ViewGroup;
+import android.widget.PopupWindow;
+
 import com.example.chatapp.R;
 import com.example.chatapp.adapters.SafetyHubAdapter;
 import com.example.chatapp.databinding.ActivitySafetyHubBinding;
@@ -48,6 +51,19 @@ public class SafetyHubActivity extends BaseActivity {
         if (conversationContext == null) conversationContext = "No context provided.";
         init();
         setListeners();
+        setupKeyboardListener();
+    }
+
+    private void setupKeyboardListener() {
+        binding.chatRecyclerView.addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
+            if (bottom < oldBottom) {
+                binding.chatRecyclerView.postDelayed(() -> {
+                    if (!safetyHubMessages.isEmpty()) {
+                        binding.chatRecyclerView.smoothScrollToPosition(safetyHubMessages.size() - 1);
+                    }
+                }, 100);
+            }
+        });
     }
 
     private void init() {
@@ -79,7 +95,9 @@ public class SafetyHubActivity extends BaseActivity {
 
     private void setListeners() {
         binding.imageBack.setOnClickListener(v -> getOnBackPressedDispatcher().onBackPressed());
-        binding.imageSend.setOnClickListener(v -> {
+        binding.imagePlus.setOnClickListener(v -> showToolsMenu());
+
+        binding.layoutSend.setOnClickListener(v -> {
             String prompt = binding.inputPrompt.getText().toString().trim();
             if (!prompt.isEmpty()) {
                 addMessage(prompt, true);
@@ -88,9 +106,53 @@ public class SafetyHubActivity extends BaseActivity {
             }
         });
 
-        binding.buttonPolicy.setOnClickListener(v -> analyzePolicy());
-        binding.buttonReport.setOnClickListener(v -> draftReport());
-        binding.buttonResources.setOnClickListener(v -> recommendResources());
+        binding.inputPrompt.addTextChangedListener(new android.text.TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (s.toString().trim().isEmpty()) {
+                    binding.layoutSend.setVisibility(View.GONE);
+                } else {
+                    binding.layoutSend.setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(android.text.Editable s) {}
+        });
+
+        binding.inputPrompt.setOnFocusChangeListener((v, hasFocus) -> binding.layoutInputContainer.setActivated(hasFocus));
+    }
+
+    private void showToolsMenu() {
+        View popupView = getLayoutInflater().inflate(R.layout.layout_safety_tools_menu, binding.main, false);
+        PopupWindow popupWindow = new PopupWindow(
+                popupView,
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                true
+        );
+        popupWindow.setElevation(1f);
+        popupWindow.setAnimationStyle(R.style.PopupAnimation);
+
+        popupView.findViewById(R.id.menuPolicy).setOnClickListener(v -> {
+            popupWindow.dismiss();
+            analyzePolicy();
+        });
+        popupView.findViewById(R.id.menuReport).setOnClickListener(v -> {
+            popupWindow.dismiss();
+            draftReport();
+        });
+        popupView.findViewById(R.id.menuResources).setOnClickListener(v -> {
+            popupWindow.dismiss();
+            recommendResources();
+        });
+
+        popupView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+        int yOffset = -popupView.getMeasuredHeight() - binding.imagePlus.getHeight();
+        popupWindow.showAsDropDown(binding.imagePlus, 0, yOffset);
     }
 
     private void analyzePolicy() {
@@ -117,7 +179,7 @@ public class SafetyHubActivity extends BaseActivity {
 
     private void callOpenAIAPI(String mode) {
         binding.progressBar.setVisibility(View.VISIBLE);
-        binding.imageSend.setEnabled(false);
+        binding.layoutSend.setEnabled(false);
         Log.d("SafetyHub", "Calling OpenAI API in mode: " + mode);
         executor.execute(() -> {
             try {
@@ -182,11 +244,11 @@ public class SafetyHubActivity extends BaseActivity {
                     runOnUiThread(() -> {
                         addMessage(resultText, false);
                         binding.progressBar.setVisibility(View.GONE);
-                        binding.imageSend.setEnabled(true);
+                        binding.layoutSend.setEnabled(true);
                     });
                 } else {
                     Log.e("SafetyHub", "API Error: " + responseCode);
-                    throw new HttpException(responseCode, ErrorUtils.getStatusName(responseCode), "Safety Hub API failed with code: " + responseCode);
+                    throw new HttpException(responseCode, ErrorUtils.getStatusName(responseCode), "Safety Assistant API failed with code: " + responseCode);
                 }
             } catch (Exception e) {
                 Log.e("SafetyHub", "API Call failed", e);
@@ -197,7 +259,7 @@ public class SafetyHubActivity extends BaseActivity {
                         showToast("Connection failed: " + e.getMessage());
                     }
                     binding.progressBar.setVisibility(View.GONE);
-                    binding.imageSend.setEnabled(true);
+                    binding.layoutSend.setEnabled(true);
                 });
             }
         });

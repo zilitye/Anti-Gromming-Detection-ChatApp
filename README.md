@@ -17,7 +17,7 @@ Install and run `app-release.apk`. Requires Android 7.0 or higher
 associated with grooming behaviour before they are sent, using a rule-based keyword 
 scoring engine. 
 
-2.  AI-powered survivor support: Providing a dedicated Safety Hub chatbot, powered by 
+2.  AI-powered survivor support: Providing a dedicated Safety Assistant chatbot, powered by
 Google Gemini, that offers survivors compassionate, context-aware guidance, reporting 
 pathways, and emotional support. 
 

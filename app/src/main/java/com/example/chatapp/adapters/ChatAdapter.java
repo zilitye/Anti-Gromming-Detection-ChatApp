@@ -7,36 +7,56 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.chatapp.R;
+import com.example.chatapp.databinding.ItemChatProfileHeaderBinding;
 import com.example.chatapp.databinding.ItemContainerReceivedMessageBinding;
 import com.example.chatapp.databinding.ItemContainerSentMessageBinding;
 import com.example.chatapp.models.ChatMessage;
+import com.example.chatapp.models.User;
 import com.example.chatapp.utilities.MarkdownUtils;
 
 import java.util.List;
 
 public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
     private final List<ChatMessage> chatMessages;
-
     private Bitmap receiverProfileImage;
     private final String senderId;
+    private final User receiverUser;
+    private final ProfileHeaderListener profileHeaderListener;
 
+    public static final int VIEW_TYPE_HEADER = 0;
     public static final int VIEW_TYPE_SENT = 1;
     public static final int VIEW_TYPE_RECEIVE = 2;
 
-    public void setReceiverProfileImage(Bitmap bitmap){
-        receiverProfileImage = bitmap;
+    public interface ProfileHeaderListener {
+        void onViewProfileClicked();
     }
 
-    public ChatAdapter(List<ChatMessage> chatMessages, Bitmap receiverProfileImage, String senderId) {
+    public void setReceiverProfileImage(Bitmap bitmap){
+        receiverProfileImage = bitmap;
+        notifyItemChanged(0);
+    }
+
+    public ChatAdapter(List<ChatMessage> chatMessages, Bitmap receiverProfileImage, String senderId, User receiverUser, ProfileHeaderListener listener) {
         this.chatMessages = chatMessages;
         this.receiverProfileImage = receiverProfileImage;
         this.senderId = senderId;
+        this.receiverUser = receiverUser;
+        this.profileHeaderListener = listener;
     }
 
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        if(viewType == VIEW_TYPE_SENT){
+        if(viewType == VIEW_TYPE_HEADER){
+            return new HeaderViewHolder(
+                    ItemChatProfileHeaderBinding.inflate(
+                            LayoutInflater.from(parent.getContext()),
+                            parent,
+                            false
+                    )
+            );
+        } else if(viewType == VIEW_TYPE_SENT){
             return new SentMessageViewHolder(
                     ItemContainerSentMessageBinding.inflate(
                             LayoutInflater.from(parent.getContext()),
@@ -57,24 +77,50 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        if(getItemViewType(position) == VIEW_TYPE_SENT){
-            ((SentMessageViewHolder) holder).setData(chatMessages.get(position));
+        if(getItemViewType(position) == VIEW_TYPE_HEADER){
+            ((HeaderViewHolder) holder).setData(receiverUser, receiverProfileImage, profileHeaderListener);
+        } else if(getItemViewType(position) == VIEW_TYPE_SENT){
+            ((SentMessageViewHolder) holder).setData(chatMessages.get(position - 1));
         }else{
-            ((ReceivedMessageViewHolder) holder).setData(chatMessages.get(position), receiverProfileImage);
+            ((ReceivedMessageViewHolder) holder).setData(chatMessages.get(position - 1), receiverProfileImage);
         }
     }
 
     @Override
     public int getItemCount() {
-        return chatMessages.size();
+        return chatMessages.size() + 1;
     }
 
     @Override
     public int getItemViewType(int position) {
-        if(chatMessages.get(position).senderId.equals(senderId)){
+        if(position == 0){
+            return VIEW_TYPE_HEADER;
+        }
+        if(chatMessages.get(position - 1).senderId.equals(senderId)){
             return VIEW_TYPE_SENT;
         }else{
             return VIEW_TYPE_RECEIVE;
+        }
+    }
+
+    static class HeaderViewHolder extends RecyclerView.ViewHolder {
+        private final ItemChatProfileHeaderBinding binding;
+
+        HeaderViewHolder(ItemChatProfileHeaderBinding itemChatProfileHeaderBinding) {
+            super(itemChatProfileHeaderBinding.getRoot());
+            binding = itemChatProfileHeaderBinding;
+        }
+
+        void setData(User user, Bitmap profileImage, ProfileHeaderListener listener) {
+            if(profileImage != null) {
+                binding.imageProfile.setImageBitmap(profileImage);
+            }
+            binding.textName.setText(user.name);
+            binding.textUsername.setText(binding.getRoot().getContext().getString(R.string.username_format, user.name.toLowerCase().replace(" ", "")));
+            binding.textStats.setText(binding.getRoot().getContext().getString(R.string.stats_format, "439K", "June 2024"));
+            binding.buttonViewProfile.setOnClickListener(v -> {
+                if(listener != null) listener.onViewProfileClicked();
+            });
         }
     }
 

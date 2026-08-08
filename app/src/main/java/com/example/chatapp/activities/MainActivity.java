@@ -8,13 +8,21 @@ import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Base64;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.view.Gravity;
 import android.view.View;
+import android.view.ContextThemeWrapper;
+import android.view.WindowManager;
+import android.widget.PopupWindow;
+import com.example.chatapp.databinding.LayoutPopupMenuBinding;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
+import com.example.chatapp.R;
 import com.example.chatapp.adapters.RecentConversationsAdapter;
 import com.example.chatapp.databinding.ActivityMainBinding;
 import com.example.chatapp.listeners.ConversionListener;
@@ -90,15 +98,58 @@ public class MainActivity extends BaseActivity implements ConversionListener {
 
     private void setListeners(){
 
-        binding.imageSignOut.setOnClickListener(v -> signOut());
+        // binding.imageProfile.setOnClickListener(v -> signOut());
         binding.fabNewChat.setOnClickListener(v ->
                 startActivity(new Intent(getApplicationContext(), UsersActivity.class)));
-        binding.imageSafetyHub.setOnClickListener(v ->
-                startActivity(new Intent(getApplicationContext(), SafetyHubActivity.class)));
+        binding.layoutFilter.setOnClickListener(this::showPopupMenu);
+        
+        binding.inputSearch.addTextChangedListener(new android.text.TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                conversationsAdapter.filter(s.toString());
+            }
+
+            @Override
+            public void afterTextChanged(android.text.Editable s) {}
+        });
+    }
+
+    private void showPopupMenu(View view) {
+        LayoutPopupMenuBinding popupBinding = LayoutPopupMenuBinding.inflate(getLayoutInflater());
+        
+        // Use fixed width to ensure it's not "too wide"
+        int width = (int) getResources().getDimension(com.intuit.sdp.R.dimen._100sdp);
+        
+        PopupWindow popupWindow = new PopupWindow(
+                popupBinding.getRoot(),
+                width,
+                WindowManager.LayoutParams.WRAP_CONTENT,
+                true
+        );
+
+        // This ensures the shadow follows the rounded corners of the background
+        popupWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        popupWindow.setElevation(8f);
+        
+        popupBinding.menuSettings.setOnClickListener(v -> {
+            showToast("Settings clicked");
+            popupWindow.dismiss();
+        });
+
+        popupBinding.menuLogout.setOnClickListener(v -> {
+            popupWindow.dismiss();
+            signOut();
+        });
+
+        // Align to the right (end) of the button
+        popupWindow.showAsDropDown(view, 0, 0, Gravity.END);
     }
 
     private void loadUserDetails(){
-        binding.textName.setText(preferenceManager.getString(Constants.KEY_NAME));
+        // binding.textName.setText(preferenceManager.getString(Constants.KEY_NAME));
         byte[] bytes = Base64.decode(preferenceManager.getString(Constants.KEY_IMAGE), Base64.DEFAULT);
         Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
         binding.imageProfile.setImageBitmap(bitmap);
@@ -166,6 +217,7 @@ public class MainActivity extends BaseActivity implements ConversionListener {
                 }
             }
             Collections.sort(conversations, (obj1, obj2) -> obj2.dateObject.compareTo(obj1.dateObject));
+            conversationsAdapter.updateFullList(conversations);
             conversationsAdapter.notifyDataSetChanged();
             binding.conversationsRecyclerView.smoothScrollToPosition(0);
             binding.conversationsRecyclerView.setVisibility(View.VISIBLE);
