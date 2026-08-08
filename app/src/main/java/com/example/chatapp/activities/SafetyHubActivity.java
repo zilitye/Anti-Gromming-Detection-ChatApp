@@ -166,14 +166,11 @@ public class SafetyHubActivity extends BaseActivity {
     }
 
     private void recommendResources() {
-        String resources = "### Recommended Resources & Hotlines\n\n" +
-                "- **Childhelp National Child Abuse Hotline**: 1-800-422-4453\n" +
-                "- **Cyber Civil Rights Initiative (CCRI)**: 1-844-878-2274\n" +
-                "- **National Suicide Prevention Lifeline**: 988\n" +
-                "- **RAINN National Sexual Assault Hotline**: 1-800-656-HOPE\n\n" +
-                "**Counseling Services:**\n" +
-                "- Look for licensed therapists specializing in trauma and child safety.\n" +
-                "- Consider online platforms like BetterHelp or local community health centers.";
+        String resources = "Resources & Hotlines\n\n" +
+                "- Childhelp National Child Abuse Hotline: 1-800-422-4453\n" +
+                "- RAINN National Sexual Assault Hotline: 1-800-656-HOPE\n" +
+                "- National Suicide Prevention Lifeline: 988\n" +
+                "- Cyber Civil Rights Initiative: 1-844-878-2274";
         addMessage(resources, false);
     }
 

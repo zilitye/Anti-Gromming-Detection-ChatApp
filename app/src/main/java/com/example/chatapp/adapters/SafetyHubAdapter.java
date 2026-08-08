@@ -95,6 +95,7 @@ public class SafetyHubAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             binding.textMessage.setText(MarkdownUtils.formatMarkdown(binding.getRoot().getContext(), safetyHubMessage.message));
             binding.textDateTime.setText(safetyHubMessage.dateTime);
             binding.imageProfile.setImageResource(R.drawable.ic_ai);
+            binding.imageProfile.setBackgroundResource(R.drawable.background_image_white);
         }
     }
 }
