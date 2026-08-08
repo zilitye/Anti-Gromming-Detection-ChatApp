@@ -80,25 +80,32 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
         if(getItemViewType(position) == VIEW_TYPE_HEADER){
             ((HeaderViewHolder) holder).setData(receiverUser, receiverProfileImage, profileHeaderListener);
         } else if(getItemViewType(position) == VIEW_TYPE_SENT){
-            ((SentMessageViewHolder) holder).setData(chatMessages.get(position - 1));
+            int index = chatMessages.isEmpty() ? position - 1 : position;
+            ((SentMessageViewHolder) holder).setData(chatMessages.get(index));
         }else{
-            ((ReceivedMessageViewHolder) holder).setData(chatMessages.get(position - 1), receiverProfileImage);
+            int index = chatMessages.isEmpty() ? position - 1 : position;
+            ((ReceivedMessageViewHolder) holder).setData(chatMessages.get(index), receiverProfileImage);
         }
     }
 
     @Override
     public int getItemCount() {
-        return chatMessages.size() + 1;
+        if (chatMessages.isEmpty()) {
+            return 1; // Show header only
+        } else {
+            return chatMessages.size(); // Show only messages
+        }
     }
 
     @Override
     public int getItemViewType(int position) {
-        if(position == 0){
+        if (chatMessages.isEmpty()) {
             return VIEW_TYPE_HEADER;
         }
-        if(chatMessages.get(position - 1).senderId.equals(senderId)){
+        
+        if (chatMessages.get(position).senderId.equals(senderId)) {
             return VIEW_TYPE_SENT;
-        }else{
+        } else {
             return VIEW_TYPE_RECEIVE;
         }
     }
@@ -116,8 +123,12 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
                 binding.imageProfile.setImageBitmap(profileImage);
             }
             binding.textName.setText(user.name);
-            binding.textUsername.setText(binding.getRoot().getContext().getString(R.string.username_format, user.name.toLowerCase().replace(" ", "")));
-            binding.textStats.setText(binding.getRoot().getContext().getString(R.string.stats_format, "439K", "June 2024"));
+            binding.imageVerified.setVisibility(android.view.View.GONE);
+            binding.textUsername.setText(binding.getRoot().getContext().getString(R.string.username_format, user.email));
+            binding.textStats.setVisibility(android.view.View.GONE);
+            binding.buttonViewProfile.setBackgroundTintList(android.content.res.ColorStateList.valueOf(
+                    androidx.core.content.ContextCompat.getColor(binding.getRoot().getContext(), R.color.macos_accent)
+            ));
             binding.buttonViewProfile.setOnClickListener(v -> {
                 if(listener != null) listener.onViewProfileClicked();
             });

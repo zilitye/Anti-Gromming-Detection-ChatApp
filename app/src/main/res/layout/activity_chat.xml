@@ -103,8 +103,7 @@
         android:visibility="gone"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintBottom_toTopOf="@id/layoutBottom"
-        app:layout_constraintTop_toBottomOf="@id/viewSeparator"
-        app:stackFromEnd="true" />
+        app:layout_constraintTop_toBottomOf="@id/viewSeparator" />
 
     <ProgressBar
         android:id="@+id/progressBar"

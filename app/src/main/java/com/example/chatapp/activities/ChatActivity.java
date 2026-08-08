@@ -86,7 +86,7 @@ public class ChatActivity extends BaseActivity {
             if (bottom < oldBottom) {
                 binding.chatRecyclerView.postDelayed(() -> {
                     if (!chatMessages.isEmpty()) {
-                        binding.chatRecyclerView.smoothScrollToPosition(chatMessages.size());
+                        binding.chatRecyclerView.smoothScrollToPosition(chatMessages.size() - 1);
                     }
                 }, 100);
             }
@@ -472,7 +472,7 @@ public class ChatActivity extends BaseActivity {
             Collections.sort(chatMessages, (obj1, obj2) -> obj1.dateObject.compareTo(obj2.dateObject));
             chatAdapter.notifyDataSetChanged();
             if (!chatMessages.isEmpty()) {
-                binding.chatRecyclerView.smoothScrollToPosition(chatMessages.size());
+                binding.chatRecyclerView.scrollToPosition(chatMessages.size() - 1);
             }
             binding.chatRecyclerView.setVisibility(View.VISIBLE);
         }
