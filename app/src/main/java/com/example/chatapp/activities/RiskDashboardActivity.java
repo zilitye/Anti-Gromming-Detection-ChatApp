@@ -14,6 +14,8 @@ import com.example.chatapp.utilities.PreferenceManager;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 public class RiskDashboardActivity extends BaseActivity {
@@ -38,6 +40,9 @@ public class RiskDashboardActivity extends BaseActivity {
     }
 
     private void init() {
+        // Warm up the on-device NLP grooming model in case it isn't already
+        // loaded, so analysis below can use it instead of the keyword fallback.
+        GroomingDetector.initialize(getApplicationContext());
         database = FirebaseFirestore.getInstance();
         preferenceManager = new PreferenceManager(getApplicationContext());
         receiverId = getIntent().getStringExtra(Constants.KEY_USER_ID);
@@ -74,32 +79,40 @@ public class RiskDashboardActivity extends BaseActivity {
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful() && task.getResult() != null) {
-                        int totalScore = 0;
-                        int flaggedCount = 0;
-                        StringBuilder detectedWords = new StringBuilder();
+                        List<String> messages = new ArrayList<>();
                         StringBuilder contextBuilder = new StringBuilder();
-
                         for (QueryDocumentSnapshot document : task.getResult()) {
                             String message = document.getString(Constants.KEY_MESSAGE);
+                            messages.add(message);
                             contextBuilder.append(message).append("\n");
-                            
-                            GroomingDetector.DetectionResult result = GroomingDetector.analyze(message);
-                            if (result.riskLevel != GroomingDetector.RiskLevel.SAFE) {
-                                totalScore += result.score;
-                                flaggedCount++;
-                                if (detectedWords.length() > 0) detectedWords.append("; ");
-                                detectedWords.append(result.reason);
-                            }
                         }
-                        
                         conversationContext = contextBuilder.toString();
-                        currentRiskScore = totalScore;
-                        currentDetectedWords = detectedWords.toString();
-                        updateUI(totalScore, flaggedCount, detectedWords.toString());
+
+                        // Analysis (NLP model inference, when ready) runs on a
+                        // background thread; results are delivered back here.
+                        GroomingDetector.analyzeBatchAsync(messages, (results, totalScore) -> {
+                            int flaggedCount = 0;
+                            StringBuilder detectedWords = new StringBuilder();
+                            for (GroomingDetector.DetectionResult result : results) {
+                                if (result.riskLevel != GroomingDetector.RiskLevel.SAFE) {
+                                    flaggedCount++;
+                                    if (detectedWords.length() > 0) detectedWords.append(", ");
+                                    detectedWords.append(result.reason
+                                            .replace("Suspicious patterns detected: ", "")
+                                            .replace("High risk patterns detected: ", "")
+                                            .replace("Semantic match: ", ""));
+                                }
+                            }
+
+                            currentRiskScore = totalScore;
+                            currentDetectedWords = detectedWords.toString();
+                            updateUI(totalScore, flaggedCount, detectedWords.toString());
+                            binding.progressBar.setVisibility(View.GONE);
+                        });
                     } else {
                         showToast("Failed to fetch messages for analysis.");
+                        binding.progressBar.setVisibility(View.GONE);
                     }
-                    binding.progressBar.setVisibility(View.GONE);
                 });
     }
 

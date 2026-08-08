@@ -1,81 +1,32 @@
 <resources>
     <string name="app_name">ChatApp</string>
-
-    <!-- Auth -->
     <string name="welcome_back">Welcome Back</string>
-    <string name="login_to_continue">Log in to continue chatting safely</string>
+    <string name="login_to_continue">Login to continue</string>
     <string name="email">Email</string>
     <string name="password">Password</string>
-    <string name="sign_in">Log In</string>
+    <string name="sign_in">Sign In</string>
     <string name="create_new_account">Create New Account</string>
-    <string name="add_image">Add Photo</string>
-    <string name="name">Your Name</string>
+    <string name="add_image">Add Image</string>
+    <string name="name">Name</string>
     <string name="confirm_password">Confirm Password</string>
-    <string name="sign_up">Create Account</string>
-
-    <!-- Chats / Main -->
-    <string name="chats_title">Chats</string>
-    <string name="search_chats">Search chats</string>
-    <string name="select_user">New Chat</string>
-    <string name="search_people">Search people</string>
-    <string name="no_chats_yet">No chats yet</string>
-    <string name="no_chats_subtitle">Tap the button below to start a new conversation</string>
-    <string name="no_people_found">No people found</string>
-
-    <!-- Chat screen -->
-    <string name="type_a_message">Message</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="select_user">Select User</string>
+    <string name="type_a_message">Type a message</string>
     <string name="online">Online</string>
-    <string name="tap_for_safety_insights">Tap for safety insights</string>
-
-    <!-- Overflow menu -->
-    <string name="menu_safety_center">Safety Center</string>
-    <string name="menu_ai_settings">AI Assistant Settings</string>
-    <string name="menu_sign_out">Sign Out</string>
-
-    <!-- Risk / Safety Insights (formerly Risk Dashboard) -->
-    <string name="risk_dashboard">Safety Insights</string>
+    <string name="risk_dashboard">Risk Dashboard</string>
     <string name="risk_score">Risk Score</string>
-    <string name="safety_summary">Summary</string>
-    <string name="open_safety_hub">Open Safety Assistant</string>
-    <string name="report_incident">Report This Conversation</string>
-    <string name="chat_with">Safety insights for %1$s</string>
-
-    <!-- Report (formerly Safety Report) -->
-    <string name="safety_report">Report a Concern</string>
+    <string name="safety_summary">Safety Summary</string>
+    <string name="open_safety_hub">Open Safety Hub</string>
+    <string name="report_incident">Report Incident</string>
+    <string name="chat_with">Chat with %1$s</string>
+    <string name="safety_report">Safety Report</string>
     <string name="why_flagged">Why was this flagged?</string>
     <string name="your_message">Conversation Context</string>
-    <string name="submit_report">Submit Report</string>
+    <string name="submit_report">Submit Official Report</string>
     <string name="view_resources">View Safety Resources</string>
-
-    <!-- Safety Assistant (formerly Safety Hub) -->
-    <string name="safety_hub">Safety Assistant</string>
-    <string name="safety_hub_welcome">Hi, I\'m your Safety Assistant. I can help with:\n\n💬 Talking through what happened\n📋 Understanding platform policies\n📝 Drafting a report\n📚 Finding support resources\n\nHow can I help today?</string>
-    <string name="ask_anything">Ask the Safety Assistant…</string>
-    <string name="ai_not_configured_title">AI Assistant isn\'t set up yet</string>
-    <string name="ai_not_configured_message">Add your own AI API key to enable the Safety Assistant chatbot. Your key stays on this device.</string>
-    <string name="ai_setup_button">Set Up AI Assistant</string>
-    <string name="tool_policy">Policy Help</string>
-    <string name="tool_report">Draft Report</string>
-    <string name="tool_resources">Resources</string>
-
-    <!-- AI Settings (new page) -->
-    <string name="ai_settings_title">AI Assistant Settings</string>
-    <string name="ai_settings_description">The Safety Assistant chatbot uses Google Gemini to have supportive conversations with you. It needs an API key to work. Grooming detection itself never uses AI — it runs entirely on this device.</string>
-    <string name="ai_settings_key_label">Gemini API Key</string>
-    <string name="ai_settings_key_hint">Paste your API key here</string>
-    <string name="ai_settings_get_key">Don\'t have a key? Get one free at aistudio.google.com</string>
-    <string name="ai_settings_save">Save Key</string>
-    <string name="ai_settings_clear">Remove Key</string>
-    <string name="ai_settings_show">Show</string>
-    <string name="ai_settings_hide">Hide</string>
-    <string name="ai_settings_status_configured">✓ AI Assistant is enabled</string>
-    <string name="ai_settings_status_not_configured">AI Assistant is not enabled</string>
-    <string name="ai_settings_saved_toast">API key saved</string>
-    <string name="ai_settings_cleared_toast">API key removed</string>
-    <string name="ai_settings_empty_error">Please enter a key, or use Remove Key to clear it</string>
-    <string name="ai_settings_privacy_note">Your key is stored only on this device and is sent only to Google\'s Gemini API.</string>
-
-    <!-- Safety warnings -->
+    <string name="safety_hub">Safety Hub</string>
+    <string name="safety_hub_welcome">How can I help you today?\n\n- Awareness Chatbot\n- Policy Analyzer\n- Report Writing Assistant\n- Resource Recommender</string>
+    <string name="ask_anything">Ask anything...</string>
     <string name="safety_warning">Safety Warning</string>
     <string name="grooming_warning_message">This message contains language that could be associated with grooming behavior. Are you sure you want to send it?\n\nDetected: %1$s</string>
     <string name="send_anyway">Send Anyway</string>

@@ -1,11 +1,11 @@
-## Anti-Gromming-ChatApp
+## Anti-Gromming-Detection-ChatApp
 
 The significance of this application extends beyond individual protection. By logging flagged 
 incidents to a secure cloud backend (Firebase Firestore), the system creates an auditable record of grooming-related communications that can support institutional reporting, counselling referrals, and policy development. The Risk Dashboard feature allows users to visualise the cumulative risk profile of a conversation over time, transforming individual message-level detection into a holistic conversation-level safety assessment.
 
 ## Demo
 
-[![Download](https://img.shields.io/badge/Download-v2.0.0-blue?style=flat-square)](https://github.com/zilitye/ChatApp/releases/download/v2.0.0/app-release.apk)
+[![Download](https://img.shields.io/badge/Download-v1.2.0-blue?style=flat-square)](https://github.com/zilitye/Anti-Gromming-Detection-ChatApp/releases/download/v1.2.0/app-release.apk)
 
 Install and run `app-release.apk`. Requires Android 7.0 or higher
 
@@ -37,8 +37,8 @@ pathways, and emotional support.
 
 1. Clone the repository
 ```bash
-git clone https://github.com/zilitye/ChatApp.git
-cd ChatApp
+git clone https://github.com/your-username/Anti-Gromming-Detection-ChatApp.git
+cd Anti-Gromming-Detection-ChatApp
 ```
 
 2. Connect Firebase

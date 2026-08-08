@@ -80,6 +80,9 @@ public class ChatActivity extends BaseActivity {
     }
 
     private void init(){
+        // Warm up the on-device NLP grooming model as early as possible so
+        // it's ready by the time the user sends a message.
+        GroomingDetector.initialize(getApplicationContext());
         preferenceManager = new PreferenceManager(getApplicationContext());
         chatMessages = new ArrayList<>();
         chatAdapter = new ChatAdapter(
@@ -106,15 +109,32 @@ public class ChatActivity extends BaseActivity {
         if (messageText.trim().isEmpty()) {
             return;
         }
-        GroomingDetector.DetectionResult result = GroomingDetector.analyze(messageText);
 
-        if (result.riskLevel == GroomingDetector.RiskLevel.HIGH) {
-            showHighRiskAlert(result);
-        } else if (result.riskLevel == GroomingDetector.RiskLevel.MEDIUM) {
-            showMediumRiskWarning(result);
-        } else {
-            performSendMessage(messageText, false, 0, null, null);
-        }
+        binding.progressBar.setVisibility(android.view.View.VISIBLE);
+        GroomingDetector.analyze(messageText, new GroomingDetector.DetectionCallback() {
+            @Override
+            public void onResult(GroomingDetector.DetectionResult result) {
+                runOnUiThread(() -> {
+                    binding.progressBar.setVisibility(android.view.View.GONE);
+                    if (result.riskLevel == GroomingDetector.RiskLevel.HIGH) {
+                        showHighRiskAlert(result);
+                    } else if (result.riskLevel == GroomingDetector.RiskLevel.MEDIUM) {
+                        showMediumRiskWarning(result);
+                    } else {
+                        performSendMessage(messageText, false, 0, null, null);
+                    }
+                });
+            }
+
+            @Override
+            public void onError(Exception e) {
+                runOnUiThread(() -> {
+                    binding.progressBar.setVisibility(android.view.View.GONE);
+                    // Fallback to sending anyway or show error
+                    performSendMessage(messageText, false, 0, null, null);
+                });
+            }
+        });
     }
 
     private void showMediumRiskWarning(GroomingDetector.DetectionResult result) {
@@ -133,28 +153,28 @@ public class ChatActivity extends BaseActivity {
                 .setMessage(R.string.high_risk_alert_message)
                 .setPositiveButton(R.string.report_get_help, (dialog, which) -> {
                     logHighRiskIncident(result);
-                    Intent intent = new Intent(getApplicationContext(), ReportActivity.class);
 
                     // Build Conversation Context - ONLY include sender's (current user) messages
-                    StringBuilder contextBuilder = new StringBuilder();
                     String currentUserId = preferenceManager.getString(Constants.KEY_USER_ID);
-                    int totalScore = 0;
-
+                    List<String> senderMessages = new ArrayList<>();
+                    StringBuilder contextBuilder = new StringBuilder();
                     for (ChatMessage chatMessage : chatMessages) {
                         if (chatMessage.senderId.equals(currentUserId)) {
+                            senderMessages.add(chatMessage.message);
                             contextBuilder.append(chatMessage.message).append("\n");
-                            GroomingDetector.DetectionResult historyResult = GroomingDetector.analyze(chatMessage.message);
-                            if (historyResult.riskLevel != GroomingDetector.RiskLevel.SAFE) {
-                                totalScore += historyResult.score;
-                            }
                         }
                     }
 
-                    intent.putExtra(Constants.KEY_USER_ID, receiverUser.id);
-                    intent.putExtra(Constants.KEY_RISK_SCORE, totalScore + result.score);
-                    intent.putExtra(Constants.KEY_RISK_LEVEL, result.reason);
-                    intent.putExtra(Constants.KEY_MESSAGE, contextBuilder.toString() + "Blocked: " + blockedMessage);
-                    startActivity(intent);
+                    // Re-scoring history runs the (possibly NLP-based) detector on
+                    // each past message, so it's done off the main thread.
+                    GroomingDetector.analyzeBatchAsync(senderMessages, (results, totalScore) -> {
+                        Intent intent = new Intent(getApplicationContext(), ReportActivity.class);
+                        intent.putExtra(Constants.KEY_USER_ID, receiverUser.id);
+                        intent.putExtra(Constants.KEY_RISK_SCORE, totalScore + result.score);
+                        intent.putExtra(Constants.KEY_RISK_LEVEL, result.reason);
+                        intent.putExtra(Constants.KEY_MESSAGE, contextBuilder.toString() + "Blocked: " + blockedMessage);
+                        startActivity(intent);
+                    });
                 })
                 .setNegativeButton(R.string.close, (dialog, which) -> logHighRiskIncident(result))
                 .show();
@@ -360,20 +380,14 @@ public class ChatActivity extends BaseActivity {
                 receiverUser.token = value.getString(Constants.KEY_FCM_TOKEN);
                 if(receiverUser.image == null){
                     receiverUser.image = value.getString(Constants.KEY_IMAGE);
-                    Bitmap receiverBitmap = getBitmapFromEncodedString(receiverUser.image);
-                    chatAdapter.setReceiverProfileImage(receiverBitmap);
+                    chatAdapter.setReceiverProfileImage(getBitmapFromEncodedString(receiverUser.image));
                     chatAdapter.notifyItemRangeChanged(0, chatMessages.size());
-                    if (receiverBitmap != null) {
-                        binding.imageProfile.setImageBitmap(receiverBitmap);
-                    }
                 }
             }
             if(isReceiverAvailable){
-                binding.textAvailability.setText(R.string.online);
-                binding.textAvailability.setTextColor(0xFFCFEFE8);
+                binding.textAvailability.setVisibility(View.VISIBLE);
             }else{
-                binding.textAvailability.setText(R.string.tap_for_safety_insights);
-                binding.textAvailability.setTextColor(0xFFCFEFE8);
+                binding.textAvailability.setVisibility(View.GONE);
             }
 
         });
@@ -438,9 +452,6 @@ public class ChatActivity extends BaseActivity {
     private void loadReceiverDetails(){
         receiverUser = (User) getIntent().getSerializableExtra(Constants.KEY_USER);
         binding.textName.setText(receiverUser.name);
-        if (receiverUser.image != null) {
-            binding.imageProfile.setImageBitmap(getBitmapFromEncodedString(receiverUser.image));
-        }
     }
 
     private void setListeners(){

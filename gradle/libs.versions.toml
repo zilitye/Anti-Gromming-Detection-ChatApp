@@ -11,6 +11,8 @@ firebaseMessaging = "25.0.1"
 firebaseFirestore = "26.2.0"
 firebaseInappmessagingDisplay = "22.0.3"
 markwon = "4.6.2"
+kotlin = "2.2.10"
+kotlinxCoroutines = "1.9.0"
 
 [libraries]
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -24,7 +26,7 @@ firebase-messaging = { group = "com.google.firebase", name = "firebase-messaging
 firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore", version.ref = "firebaseFirestore" }
 firebase-inappmessaging-display = { group = "com.google.firebase", name = "firebase-inappmessaging-display", version.ref = "firebaseInappmessagingDisplay" }
 markwon-core = { group = "io.noties.markwon", name = "core", version.ref = "markwon" }
+kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "kotlinxCoroutines" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
-

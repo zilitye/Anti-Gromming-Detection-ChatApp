@@ -1,7 +1,7 @@
 package com.example.chatapp.activities;
 
-import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 import com.example.chatapp.R;
@@ -11,7 +11,6 @@ import com.example.chatapp.models.SafetyHubMessage;
 import com.example.chatapp.utilities.Constants;
 import com.example.chatapp.utilities.ErrorUtils;
 import com.example.chatapp.utilities.HttpException;
-import com.example.chatapp.utilities.PreferenceManager;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -33,7 +32,6 @@ import java.util.concurrent.Executors;
 public class SafetyHubActivity extends BaseActivity {
 
     private ActivitySafetyHubBinding binding;
-    private PreferenceManager preferenceManager;
     private final Executor executor = Executors.newSingleThreadExecutor();
     private String conversationContext = "";
     private List<SafetyHubMessage> safetyHubMessages;
@@ -46,17 +44,10 @@ public class SafetyHubActivity extends BaseActivity {
         binding = ActivitySafetyHubBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         applyEdgeToEdge(binding.main);
-        preferenceManager = new PreferenceManager(getApplicationContext());
         conversationContext = getIntent().getStringExtra("conversation");
         if (conversationContext == null) conversationContext = "No context provided.";
         init();
         setListeners();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        updateAiAvailabilityBanner();
     }
 
     private void init() {
@@ -67,16 +58,6 @@ public class SafetyHubActivity extends BaseActivity {
 
         // Add welcome message
         addMessage(getString(R.string.safety_hub_welcome), false);
-        updateAiAvailabilityBanner();
-    }
-
-    private boolean isAiConfigured() {
-        String key = preferenceManager.getString(Constants.KEY_GEMINI_API_KEY);
-        return key != null && !key.trim().isEmpty();
-    }
-
-    private void updateAiAvailabilityBanner() {
-        binding.layoutAiBanner.setVisibility(isAiConfigured() ? View.GONE : View.VISIBLE);
     }
 
     private void addMessage(String text, boolean isUser) {
@@ -86,12 +67,8 @@ public class SafetyHubActivity extends BaseActivity {
 
         try {
             JSONObject content = new JSONObject();
-            content.put("role", isUser ? "user" : "model");
-            JSONArray parts = new JSONArray();
-            JSONObject part = new JSONObject();
-            part.put("text", text);
-            parts.put(part);
-            content.put("parts", parts);
+            content.put("role", isUser ? "user" : "assistant");
+            content.put("content", text);
             chatHistory.put(content);
         } catch (Exception ignored) {}
     }
@@ -102,19 +79,13 @@ public class SafetyHubActivity extends BaseActivity {
 
     private void setListeners() {
         binding.imageBack.setOnClickListener(v -> getOnBackPressedDispatcher().onBackPressed());
-        binding.buttonSetupAi.setOnClickListener(v ->
-                startActivity(new Intent(getApplicationContext(), AiSettingsActivity.class)));
-
         binding.imageSend.setOnClickListener(v -> {
             String prompt = binding.inputPrompt.getText().toString().trim();
-            if (prompt.isEmpty()) return;
-            if (!isAiConfigured()) {
-                startActivity(new Intent(getApplicationContext(), AiSettingsActivity.class));
-                return;
+            if (!prompt.isEmpty()) {
+                addMessage(prompt, true);
+                binding.inputPrompt.setText("");
+                callOpenAIAPI("Q&A");
             }
-            addMessage(prompt, true);
-            binding.inputPrompt.setText("");
-            callGeminiAPI("Q&A");
         });
 
         binding.buttonPolicy.setOnClickListener(v -> analyzePolicy());
@@ -123,25 +94,16 @@ public class SafetyHubActivity extends BaseActivity {
     }
 
     private void analyzePolicy() {
-        if (!isAiConfigured()) {
-            startActivity(new Intent(getApplicationContext(), AiSettingsActivity.class));
-            return;
-        }
         addMessage("Policy Analysis Requested", true);
-        callGeminiAPI("Policy Analysis");
+        callOpenAIAPI("Policy Analysis");
     }
 
     private void draftReport() {
-        if (!isAiConfigured()) {
-            startActivity(new Intent(getApplicationContext(), AiSettingsActivity.class));
-            return;
-        }
         addMessage("Report Assistant Requested", true);
-        callGeminiAPI("Report Assistant");
+        callOpenAIAPI("Report Assistant");
     }
 
     private void recommendResources() {
-        // This tool works locally regardless of whether an AI key is configured.
         String resources = "### Recommended Resources & Hotlines\n\n" +
                 "- **Childhelp National Child Abuse Hotline**: 1-800-422-4453\n" +
                 "- **Cyber Civil Rights Initiative (CCRI)**: 1-844-878-2274\n" +
@@ -153,45 +115,45 @@ public class SafetyHubActivity extends BaseActivity {
         addMessage(resources, false);
     }
 
-    private void callGeminiAPI(String mode) {
-        String apiKey = preferenceManager.getString(Constants.KEY_GEMINI_API_KEY);
+    private void callOpenAIAPI(String mode) {
         binding.progressBar.setVisibility(View.VISIBLE);
         binding.imageSend.setEnabled(false);
+        Log.d("SafetyHub", "Calling OpenAI API in mode: " + mode);
         executor.execute(() -> {
             try {
-                URL url = new URL("https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent");
+                URL url = new URL("https://api.openai.com/v1/chat/completions");
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("POST");
                 conn.setRequestProperty("Content-Type", "application/json");
-                conn.setRequestProperty("X-goog-api-key", apiKey);
+                conn.setRequestProperty("Authorization", "Bearer " + Constants.OPENAI_API_KEY);
                 conn.setDoOutput(true);
+                conn.setConnectTimeout(15000);
+                conn.setReadTimeout(15000);
 
-                // Construct system instruction and combined history
-                JSONArray contentsArray = new JSONArray();
+                // Construct messages array for OpenAI
+                JSONArray messagesArray = new JSONArray();
                 
                 // Add System/Context Instruction as the first message
                 JSONObject systemPrompt = new JSONObject();
-                systemPrompt.put("role", "user");
-                JSONArray systemParts = new JSONArray();
-                JSONObject systemText = new JSONObject();
-                systemText.put("text", "You are a compassionate, trained counsellor supporting survivors of online grooming and sexual harassment. " +
+                systemPrompt.put("role", "system");
+                systemPrompt.put("content", "You are a compassionate, trained counsellor supporting survivors of online grooming and sexual harassment. " +
                         "Always respond with empathy and avoid victim-blaming language. " +
                         "Ask user to tap on Resources button provided in the ui. " +
                         "Mode: " + mode + ". " +
                         "Conversation context for reference: " + conversationContext + " " +
                         "Respond to the user's latest message based on this context and history.");
-
-                systemParts.put(systemText);
-                systemPrompt.put("parts", systemParts);
-                contentsArray.put(systemPrompt);
+                messagesArray.put(systemPrompt);
 
                 // Add conversation history
                 for (int i = 0; i < chatHistory.length(); i++) {
-                    contentsArray.put(chatHistory.get(i));
+                    messagesArray.put(chatHistory.get(i));
                 }
                 
                 JSONObject requestBody = new JSONObject();
-                requestBody.put("contents", contentsArray);
+                requestBody.put("model", "gpt-4o-mini");
+                requestBody.put("messages", messagesArray);
+
+                Log.d("SafetyHub", "Request: " + requestBody.toString());
 
                 try (OutputStream os = conn.getOutputStream()) {
                     byte[] input = requestBody.toString().getBytes(StandardCharsets.UTF_8);
@@ -199,6 +161,8 @@ public class SafetyHubActivity extends BaseActivity {
                 }
 
                 int responseCode = conn.getResponseCode();
+                Log.d("SafetyHub", "Response Code: " + responseCode);
+
                 if (responseCode == HttpURLConnection.HTTP_OK) {
                     BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8));
                     StringBuilder response = new StringBuilder();
@@ -207,35 +171,30 @@ public class SafetyHubActivity extends BaseActivity {
                         response.append(responseLine.trim());
                     }
                     
+                    Log.d("SafetyHub", "Response Body: " + response.toString());
+
                     JSONObject responseJson = new JSONObject(response.toString());
-                    String resultText = responseJson.getJSONArray("candidates")
+                    String resultText = responseJson.getJSONArray("choices")
                             .getJSONObject(0)
-                            .getJSONObject("content")
-                            .getJSONArray("parts")
-                            .getJSONObject(0)
-                            .getString("text");
+                            .getJSONObject("message")
+                            .getString("content");
 
                     runOnUiThread(() -> {
                         addMessage(resultText, false);
                         binding.progressBar.setVisibility(View.GONE);
                         binding.imageSend.setEnabled(true);
                     });
-                } else if (responseCode == HttpURLConnection.HTTP_UNAUTHORIZED || responseCode == HttpURLConnection.HTTP_FORBIDDEN) {
-                    runOnUiThread(() -> {
-                        showToast("Your AI API key was rejected. Please check it in AI Assistant Settings.");
-                        binding.progressBar.setVisibility(View.GONE);
-                        binding.imageSend.setEnabled(true);
-                        updateAiAvailabilityBanner();
-                    });
                 } else {
-                    throw new HttpException(responseCode, ErrorUtils.getStatusName(responseCode), "Safety Hub API failed");
+                    Log.e("SafetyHub", "API Error: " + responseCode);
+                    throw new HttpException(responseCode, ErrorUtils.getStatusName(responseCode), "Safety Hub API failed with code: " + responseCode);
                 }
             } catch (Exception e) {
+                Log.e("SafetyHub", "API Call failed", e);
                 runOnUiThread(() -> {
                     if (e instanceof HttpException) {
                         showToast(e.toString());
                     } else {
-                        showToast("Connection failed");
+                        showToast("Connection failed: " + e.getMessage());
                     }
                     binding.progressBar.setVisibility(View.GONE);
                     binding.imageSend.setEnabled(true);

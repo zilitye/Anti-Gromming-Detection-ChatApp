@@ -38,7 +38,6 @@
         <activity android:name=".activities.ReportActivity" />
         <activity android:name=".activities.SafetyHubActivity" />
         <activity android:name=".activities.RiskDashboardActivity" />
-        <activity android:name=".activities.AiSettingsActivity" />
 
         <service
             android:name=".firebase.MessagingService"

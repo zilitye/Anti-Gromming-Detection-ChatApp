@@ -1,207 +1,240 @@
 package com.example.chatapp.utilities;
 
+import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
+
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.Map;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 /**
- * A fully local, rule-based grooming risk detector. No network calls and no AI model are
- * used here — detection has to keep working even when the chatbot's AI key isn't configured.
- *
- * Improvements over the previous version:
- *  - Matches use word boundaries via regex instead of naive substring search, so a phrase
- *    like "older" no longer fires inside an unrelated word such as "folder".
- *  - Phrases are grouped into behavioural categories (secrecy, isolation, sexual content
- *    requests, meeting requests, personal-info fishing, incentives, trust manipulation)
- *    instead of one flat keyword list.
- *  - Risk isn't just additive: when a message (or the conversation history passed in)
- *    touches multiple distinct categories, an escalation bonus is added. Real grooming
- *    tends to combine tactics (e.g. build trust, isolate from parents, then request
- *    something private) rather than rely on one type of phrase, so category diversity is
- *    itself a signal.
- *  - Repeated matches of the exact same phrase only count once per message, so padding a
- *    message with a repeated word can't inflate the score.
+ * Detects grooming-risk language in chat messages.
+ * <p>
+ * Detection now runs on a local, on-device NLP model (sentence embeddings +
+ * semantic similarity -- see {@link NLPGroomingEngine}) instead of plain
+ * keyword matching, so it can recognize grooming tactics phrased in ways
+ * that don't literally contain one of a fixed list of words (e.g. "send a
+ * pic with nothing on" instead of "nude").
+ * <p>
+ * A lightweight keyword-based scorer is kept as an automatic fallback for
+ * the brief window before the local model finishes downloading/loading on
+ * first launch, for offline use before the model has ever been downloaded,
+ * and for plain JVM unit tests where the on-device ML runtime isn't
+ * available -- so the app is never left without any protection at all.
  */
 public class GroomingDetector {
+
+    private static final Executor executor = Executors.newSingleThreadExecutor();
+
+    // Lazy load Handler to avoid ExceptionInInitializerError in unit tests
+    private static class HandlerHolder {
+        private static final Handler mainHandler = new Handler(Looper.getMainLooper());
+    }
 
     public enum RiskLevel {
         SAFE, MEDIUM, HIGH
     }
 
-    public enum Category {
-        SECRECY_ISOLATION("secrecy or isolation from trusted adults"),
-        TRUST_MANIPULATION("manipulative trust-building language"),
-        SEXUAL_CONTENT("a request for sexual content or images"),
-        MEETING_REQUEST("a request to meet in person privately"),
-        PERSONAL_INFO("fishing for personal details"),
-        GIFTS_MONEY("gifts or money used as an incentive");
-
-        final String label;
-        Category(String label) { this.label = label; }
-    }
-
     public static class DetectionResult {
-        public final RiskLevel riskLevel;
-        public final int score;
-        public final String reason;
-        public final Set<Category> categories;
+        public RiskLevel riskLevel;
+        public int score;
+        public String reason;
 
-        public DetectionResult(RiskLevel riskLevel, int score, String reason, Set<Category> categories) {
+        public DetectionResult(RiskLevel riskLevel, int score, String reason) {
             this.riskLevel = riskLevel;
             this.score = score;
             this.reason = reason;
-            this.categories = categories;
         }
     }
 
-    private static class RulePattern {
-        final Pattern pattern;
-        final int weight;
-        final Category category;
-
-        RulePattern(String phrase, int weight, Category category) {
-            // \b word boundaries stop "older" from matching inside "folder", etc.
-            // The phrase is wrapped in a non-capturing group before anchoring so the
-            // boundaries apply to the whole alternation (e.g. "a|b|c"), not just its
-            // first and last branches.
-            this.pattern = Pattern.compile("\\b(?:" + phrase + ")\\b", Pattern.CASE_INSENSITIVE);
-            this.weight = weight;
-            this.category = category;
-        }
+    public interface DetectionCallback {
+        void onResult(DetectionResult result);
+        void onError(Exception e);
     }
 
-    private static final List<RulePattern> PATTERNS = new ArrayList<>();
-
-    private static void add(String phrase, int weight, Category category) {
-        PATTERNS.add(new RulePattern(phrase, weight, category));
+    public interface BatchCallback {
+        void onResult(List<DetectionResult> results, int totalScore);
     }
 
-    static {
-        // --- Secrecy / isolation from parents or other trusted adults ---
-        add("don'?t tell (your )?(parents|mom|dad|mum|anyone)", 30, Category.SECRECY_ISOLATION);
-        add("our (little )?secret", 28, Category.SECRECY_ISOLATION);
-        add("(just |keep this )?between (you and me|us)", 22, Category.SECRECY_ISOLATION);
-        add("parents? (won'?t|wouldn'?t) (know|understand)", 28, Category.SECRECY_ISOLATION);
-        add("delete (this|our) (chat|conversation|messages?)", 24, Category.SECRECY_ISOLATION);
-        add("don'?t let (them|anyone) (see|find out)", 20, Category.SECRECY_ISOLATION);
-
-        // --- Manipulative trust-building / grooming flattery ---
-        add("mature for (your|ur) age", 18, Category.TRUST_MANIPULATION);
-        add("no one (else )?understands you( like i do)?", 16, Category.TRUST_MANIPULATION);
-        add("i'?m the only one who (cares|understands)", 16, Category.TRUST_MANIPULATION);
-        add("you can trust (only )?me", 14, Category.TRUST_MANIPULATION);
-        add("i love you", 8, Category.TRUST_MANIPULATION);
-        add("sweetie|darling|baby girl|baby boy", 8, Category.TRUST_MANIPULATION);
-
-        // --- Requests for sexual content ---
-        add("send (me )?(a )?nudes?", 45, Category.SEXUAL_CONTENT);
-        add("(private|naked) (photo|picture|pic)s?", 40, Category.SEXUAL_CONTENT);
-        add("show me your body", 40, Category.SEXUAL_CONTENT);
-        add("take (your|ur) clothes off", 42, Category.SEXUAL_CONTENT);
-        add("webcam show", 30, Category.SEXUAL_CONTENT);
-        add("sexy", 20, Category.SEXUAL_CONTENT);
-        add("undress", 30, Category.SEXUAL_CONTENT);
-
-        // --- Requests to meet in person / isolate physically ---
-        add("meet (up )?alone", 32, Category.MEETING_REQUEST);
-        add("meet (up )?in person", 20, Category.MEETING_REQUEST);
-        add("without (your|ur) parents", 26, Category.MEETING_REQUEST);
-        add("(i'?ll|can i) pick you up", 22, Category.MEETING_REQUEST);
-        add("come (over|to my place|to my house)", 20, Category.MEETING_REQUEST);
-
-        // --- Fishing for personal / identifying details ---
-        add("(are you|r u) home alone", 24, Category.PERSONAL_INFO);
-        add("what'?s your address", 22, Category.PERSONAL_INFO);
-        add("where do you live", 14, Category.PERSONAL_INFO);
-        add("what school do you (go to|attend)", 14, Category.PERSONAL_INFO);
-        add("how old are you", 6, Category.PERSONAL_INFO);
-        add("send me your (location|number)", 20, Category.PERSONAL_INFO);
-
-        // --- Gifts / money used as an incentive ---
-        add("buy you (a )?gift", 14, Category.GIFTS_MONEY);
-        add("send (you )?money", 14, Category.GIFTS_MONEY);
-        add("gift card", 12, Category.GIFTS_MONEY);
-        add("i'?ll pay you", 16, Category.GIFTS_MONEY);
+    /**
+     * Starts downloading/loading the local sentence-embedding model in the
+     * background. Safe to call repeatedly (e.g. from every activity's
+     * onCreate) -- only the first call does any work. Call this as early as
+     * possible (app/first activity launch) so the NLP engine is warmed up by
+     * the time the user starts chatting.
+     */
+    public static void initialize(Context context) {
+        NLPGroomingEngine.initialize(context.getApplicationContext());
     }
 
-    // Score thresholds for classification.
-    private static final int HIGH_THRESHOLD = 50;
-    private static final int MEDIUM_THRESHOLD = 20;
-
-    // Escalation bonuses applied when a message spans multiple distinct grooming categories,
-    // reflecting how real grooming tends to combine tactics rather than rely on just one.
-    private static final int BONUS_TWO_CATEGORIES = 10;
-    private static final int BONUS_THREE_PLUS_CATEGORIES = 20;
-
+    /**
+     * Primary synchronous analysis.
+     * <p>
+     * Uses the on-device NLP model when it is ready AND this call is not on
+     * the main thread (model inference must never block the UI thread).
+     * Otherwise falls back to fast keyword-based scoring, so callers on the
+     * main thread -- or plain JVM unit tests -- never block or crash.
+     * Prefer {@link #analyze(String, DetectionCallback)} or
+     * {@link #analyzeBatchAsync(List, BatchCallback)} from UI code.
+     */
     public static DetectionResult analyze(String message) {
         if (message == null || message.trim().isEmpty()) {
-            return new DetectionResult(RiskLevel.SAFE, 0, "Empty message", new LinkedHashSet<>());
+            return new DetectionResult(RiskLevel.SAFE, 0, "Empty message");
         }
 
-        String normalized = normalize(message);
+        if (NLPGroomingEngine.isModelReady() && !isOnMainThread()) {
+            return toDetectionResult(NLPGroomingEngine.analyzeBlocking(message));
+        }
+        return analyzeRuleBased(message);
+    }
 
-        int rawScore = 0;
-        Set<Category> matchedCategories = new LinkedHashSet<>();
-        // Track which exact phrases already matched so repeating one phrase can't inflate score.
-        Set<String> matchedPhrases = new LinkedHashSet<>();
+    /**
+     * True if called on the main/UI thread. Defaults to "true" (i.e. treat
+     * as main thread, use the safe rule-based path) if Looper can't be
+     * queried at all -- e.g. plain JVM unit tests with no Android runtime.
+     */
+    private static boolean isOnMainThread() {
+        try {
+            return Looper.myLooper() == Looper.getMainLooper();
+        } catch (Throwable t) {
+            return true;
+        }
+    }
 
-        for (RulePattern rule : PATTERNS) {
-            Matcher matcher = rule.pattern.matcher(normalized);
-            if (matcher.find()) {
-                String key = rule.pattern.pattern();
-                if (matchedPhrases.add(key)) {
-                    rawScore += rule.weight;
-                    matchedCategories.add(rule.category);
+    /**
+     * Asynchronous analysis: always runs off the main thread, prefers the
+     * NLP engine once it has finished loading (falling back to keyword
+     * scoring until then), and invokes {@code callback} on the main thread.
+     */
+    public static void analyze(String message, DetectionCallback callback) {
+        if (message == null || message.trim().isEmpty()) {
+            callback.onResult(new DetectionResult(RiskLevel.SAFE, 0, "Empty message"));
+            return;
+        }
+
+        executor.execute(() -> {
+            try {
+                DetectionResult result = NLPGroomingEngine.isModelReady()
+                        ? toDetectionResult(NLPGroomingEngine.analyzeBlocking(message))
+                        : analyzeRuleBased(message);
+                postResult(callback, result);
+            } catch (Exception e) {
+                try {
+                    HandlerHolder.mainHandler.post(() -> callback.onError(e));
+                } catch (Exception ignored) {
+                    callback.onError(e);
                 }
+            }
+        });
+    }
+
+    /**
+     * Analyzes a batch of messages (e.g. conversation history) on a single
+     * background thread and reports back on the main thread, so callers
+     * (such as risk-dashboard or history scans) never need to run NLP
+     * inference on the UI thread themselves.
+     */
+    public static void analyzeBatchAsync(List<String> messages, BatchCallback callback) {
+        executor.execute(() -> {
+            List<DetectionResult> results = new ArrayList<>();
+            int totalScore = 0;
+            boolean nlpReady = NLPGroomingEngine.isModelReady();
+            for (String message : messages) {
+                DetectionResult result = nlpReady
+                        ? toDetectionResult(NLPGroomingEngine.analyzeBlocking(message))
+                        : analyzeRuleBased(message);
+                results.add(result);
+                if (result.riskLevel != RiskLevel.SAFE) {
+                    totalScore += result.score;
+                }
+            }
+            int finalTotalScore = totalScore;
+            try {
+                HandlerHolder.mainHandler.post(() -> callback.onResult(results, finalTotalScore));
+            } catch (Exception ignored) {
+                callback.onResult(results, finalTotalScore);
+            }
+        });
+    }
+
+    private static DetectionResult toDetectionResult(NLPGroomingEngine.NLPResult r) {
+        return new DetectionResult(r.getRiskLevel(), r.getScore(), r.getReason());
+    }
+
+    private static void postResult(DetectionCallback callback, DetectionResult result) {
+        try {
+            HandlerHolder.mainHandler.post(() -> callback.onResult(result));
+        } catch (Exception e) {
+            callback.onResult(result);
+        }
+    }
+
+    // ---- Keyword-based fallback (used only while the local NLP model isn't loaded) ----
+
+    private static final Map<String, Integer> GROOMING_KEYWORDS = new HashMap<>();
+
+    static {
+        // High risk keywords/phrases
+        GROOMING_KEYWORDS.put("don't tell", 30);
+        GROOMING_KEYWORDS.put("our secret", 30);
+        GROOMING_KEYWORDS.put("private photo", 40);
+        GROOMING_KEYWORDS.put("nude", 50);
+        GROOMING_KEYWORDS.put("sexy", 25);
+        GROOMING_KEYWORDS.put("meet alone", 40);
+        GROOMING_KEYWORDS.put("parents won't know", 35);
+
+        // Medium risk keywords/phrases
+        GROOMING_KEYWORDS.put("webcam", 20);
+        GROOMING_KEYWORDS.put("lonely", 15);
+        GROOMING_KEYWORDS.put("gift", 10);
+        GROOMING_KEYWORDS.put("money", 10);
+        GROOMING_KEYWORDS.put("older", 5);
+        GROOMING_KEYWORDS.put("sweetie", 10);
+        GROOMING_KEYWORDS.put("darling", 10);
+    }
+
+    private static DetectionResult analyzeRuleBased(String message) {
+        if (message == null || message.trim().isEmpty()) {
+            return new DetectionResult(RiskLevel.SAFE, 0, "Empty message");
+        }
+
+        String lowerMessage = message.toLowerCase();
+        int score = 0;
+        StringBuilder detectedPatterns = new StringBuilder();
+
+        for (Map.Entry<String, Integer> entry : GROOMING_KEYWORDS.entrySet()) {
+            if (lowerMessage.contains(entry.getKey())) {
+                score += entry.getValue();
+                if (detectedPatterns.length() > 0) detectedPatterns.append(", ");
+                detectedPatterns.append(entry.getKey());
             }
         }
 
-        int bonus = 0;
-        if (matchedCategories.size() >= 3) {
-            bonus = BONUS_THREE_PLUS_CATEGORIES;
-        } else if (matchedCategories.size() == 2) {
-            bonus = BONUS_TWO_CATEGORIES;
-        }
-
-        int score = Math.min(100, rawScore + bonus);
-
         RiskLevel level;
-        if (score >= HIGH_THRESHOLD) {
+        String reason;
+        if (score >= 50) {
             level = RiskLevel.HIGH;
-        } else if (score >= MEDIUM_THRESHOLD) {
+            reason = "High risk patterns detected: " + detectedPatterns.toString();
+        } else if (score >= 20) {
             level = RiskLevel.MEDIUM;
+            reason = "Suspicious patterns detected: " + detectedPatterns.toString();
         } else {
             level = RiskLevel.SAFE;
+            reason = "No significant risk patterns detected";
         }
 
-        String reason = buildReason(level, matchedCategories);
-        return new DetectionResult(level, score, reason, matchedCategories);
+        return new DetectionResult(level, score, reason);
     }
 
-    /** Lowercases and normalizes common contractions/spacing so patterns match reliably. */
-    private static String normalize(String message) {
-        String lower = message.toLowerCase();
-        // Normalize curly apostrophes to straight ones so "don't"/"don't" both match.
-        lower = lower.replace('\u2019', '\'');
-        // Collapse repeated whitespace.
-        lower = lower.replaceAll("\\s+", " ").trim();
-        return lower;
-    }
-
-    private static String buildReason(RiskLevel level, Set<Category> categories) {
-        if (categories.isEmpty()) {
-            return "No significant risk patterns detected";
-        }
-        StringBuilder sb = new StringBuilder();
-        int i = 0;
-        for (Category category : categories) {
-            if (i > 0) sb.append(", ");
-            sb.append(category.label);
-            i++;
-        }
-        return sb.toString();
+    /**
+     * @deprecated Use {@link #analyze(String)} instead.
+     */
+    @Deprecated
+    public static DetectionResult analyzeSync(String message) {
+        return analyze(message);
     }
 }
