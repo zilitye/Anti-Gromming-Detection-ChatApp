@@ -46,9 +46,11 @@ public class ReportActivity extends BaseActivity {
             binding.textReason.setText(reason);
             binding.layoutReason.setVisibility(View.VISIBLE);
             binding.headerContext.setText(R.string.flagged_content);
+            binding.inputFeedback.setHint(R.string.feedback_hint_ai);
         } else {
             binding.layoutReason.setVisibility(View.GONE);
             binding.headerContext.setText(R.string.your_message);
+            binding.inputFeedback.setHint(R.string.feedback_hint_manual);
         }
         
         binding.textMessage.setText(message);

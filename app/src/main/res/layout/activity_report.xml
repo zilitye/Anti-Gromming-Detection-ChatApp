@@ -113,7 +113,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/_8sdp"
                 android:background="@drawable/background_chat_input_refined"
-                android:hint="@string/feedback_hint"
                 android:importantForAutofill="no"
                 android:inputType="textMultiLine"
                 android:minHeight="@dimen/_80sdp"
