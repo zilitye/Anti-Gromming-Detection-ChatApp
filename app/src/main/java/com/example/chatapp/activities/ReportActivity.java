@@ -176,8 +176,17 @@ public class ReportActivity extends BaseActivity {
         for (int i = 0; i < flaggedMessages.size(); i++) {
             ChatMessage message = flaggedMessages.get(i);
             View itemView = LayoutInflater.from(this).inflate(R.layout.item_message_dropdown, menuContainer, false);
+            
             TextView textMessage = itemView.findViewById(R.id.textMessage);
+            TextView textReason = itemView.findViewById(R.id.textReason);
+            
             textMessage.setText(message.message);
+            if (message.flaggedReason != null && !message.flaggedReason.trim().isEmpty()) {
+                textReason.setText(String.format("Reason: %s", message.flaggedReason));
+                textReason.setVisibility(View.VISIBLE);
+            } else {
+                textReason.setVisibility(View.GONE);
+            }
             
             final int index = i;
             itemView.setOnClickListener(v -> {

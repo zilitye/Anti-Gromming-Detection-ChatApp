@@ -218,13 +218,13 @@ public class GroomingDetector {
         String reason;
         if (score >= 50) {
             level = RiskLevel.HIGH;
-            reason = "High risk patterns detected: " + detectedPatterns.toString();
+            reason = "Keyword match (high risk): " + detectedPatterns.toString();
         } else if (score >= 20) {
             level = RiskLevel.MEDIUM;
-            reason = "Suspicious patterns detected: " + detectedPatterns.toString();
+            reason = "Keyword match (suspicious): " + detectedPatterns.toString();
         } else {
             level = RiskLevel.SAFE;
-            reason = "No significant risk patterns detected";
+            reason = "No risk patterns detected (keyword scan)";
         }
 
         return new DetectionResult(level, score, reason);

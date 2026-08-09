@@ -1,10 +1,16 @@
 package com.example.chatapp.activities;
 
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Patterns;
 import android.view.View;
 
+import androidx.core.content.ContextCompat;
+
+import com.example.chatapp.R;
 import com.example.chatapp.databinding.ActivitySignInBinding;
 import com.example.chatapp.utilities.Constants;
 import com.example.chatapp.utilities.PreferenceManager;
@@ -28,16 +34,43 @@ public class SignInActivity extends BaseActivity {
         binding = ActivitySignInBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         setListeners();
+        updateButtonColor();
     }
 
     private void setListeners(){
-        binding.textCreateNewAccount.setOnClickListener(v ->
+        binding.buttonCreateNewAccount.setOnClickListener(v ->
                 startActivity(new Intent(getApplicationContext(), SignUpActivity.class)));
         binding.buttonSignIn.setOnClickListener(v -> {
             if (isValidSignInDetails()){
                 signIn();
             }
         });
+        binding.inputEmail.addTextChangedListener(watcher);
+        binding.inputPassword.addTextChangedListener(watcher);
+    }
+
+    private final TextWatcher watcher = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            updateButtonColor();
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {}
+    };
+
+    private void updateButtonColor(){
+        if(!binding.inputEmail.getText().toString().trim().isEmpty()
+                && !binding.inputPassword.getText().toString().trim().isEmpty()){
+            binding.buttonSignIn.setBackgroundTintList(ColorStateList.valueOf(
+                    ContextCompat.getColor(getApplicationContext(), R.color.macos_accent)));
+        }else{
+            binding.buttonSignIn.setBackgroundTintList(ColorStateList.valueOf(
+                    ContextCompat.getColor(getApplicationContext(), R.color.pixiv_blue)));
+        }
     }
 
     private void signIn(){

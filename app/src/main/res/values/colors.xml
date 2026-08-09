@@ -20,4 +20,6 @@
     <color name="macos_traffic_green">#28C840</color>
     <color name="green">#34C759</color>
     <color name="red">#FF3B30</color>
+    <color name="pixiv_blue">#D0E9FF</color>
+    <color name="pixiv_gray">#F5F5F5</color>
 </resources>

@@ -227,9 +227,9 @@ object NLPGroomingEngine {
         }
 
         val reason = if (matched.isEmpty()) {
-            "No grooming patterns detected (semantic analysis)"
+            "No grooming patterns detected (AI analysis)"
         } else {
-            "Semantic match: " + matched.joinToString(", ")
+            "AI detection (semantic match): " + matched.joinToString(", ")
         }
 
         return NLPResult(riskLevel, totalScore, reason)

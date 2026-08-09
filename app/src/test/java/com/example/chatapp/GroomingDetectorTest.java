@@ -36,4 +36,17 @@ public class GroomingDetectorTest {
         GroomingDetector.DetectionResult result = GroomingDetector.analyze("");
         assertEquals(GroomingDetector.RiskLevel.SAFE, result.riskLevel);
     }
+
+    @Test
+    public void testReasonStrings() {
+        // Since unit tests don't have the NLP model ready, these should hit the rule-based fallback
+        GroomingDetector.DetectionResult resultMedium = GroomingDetector.analyze("meet alone");
+        assertTrue(resultMedium.reason.startsWith("Keyword match (suspicious):"));
+
+        GroomingDetector.DetectionResult resultHigh = GroomingDetector.analyze("nude parents won't know");
+        assertTrue(resultHigh.reason.startsWith("Keyword match (high risk):"));
+
+        GroomingDetector.DetectionResult resultSafe = GroomingDetector.analyze("hello");
+        assertEquals("No risk patterns detected (keyword scan)", resultSafe.reason);
+    }
 }

@@ -1,24 +1,27 @@
 package com.example.chatapp.activities;
 
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Base64;
 import android.util.Patterns;
 import android.view.View;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.core.content.ContextCompat;
+
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.example.chatapp.R;
-import com.example.chatapp.databinding.ActivitySignInBinding;
 import com.example.chatapp.databinding.ActivitySignUpBinding;
 import com.example.chatapp.utilities.Constants;
 import com.example.chatapp.utilities.PreferenceManager;
-import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
@@ -38,10 +41,11 @@ public class SignUpActivity extends BaseActivity {
         setContentView(binding.getRoot());
         preferenceManager = new PreferenceManager(getApplicationContext());
         setListeners();
+        updateButtonColor();
     }
 
     private void setListeners(){
-        binding.textSignIn.setOnClickListener(v -> onBackPressed());
+        binding.buttonSignInLink.setOnClickListener(v -> onBackPressed());
         binding.buttonSignUp.setOnClickListener(v -> {
             if(isValidSignUpDetails()){
                 signUp();
@@ -52,6 +56,36 @@ public class SignUpActivity extends BaseActivity {
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             pickImage.launch(intent);
         });
+        binding.inputName.addTextChangedListener(watcher);
+        binding.inputEmail.addTextChangedListener(watcher);
+        binding.inputPassword.addTextChangedListener(watcher);
+        binding.inputConfirmPassword.addTextChangedListener(watcher);
+    }
+
+    private final TextWatcher watcher = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            updateButtonColor();
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {}
+    };
+
+    private void updateButtonColor(){
+        if(!binding.inputName.getText().toString().trim().isEmpty()
+                && !binding.inputEmail.getText().toString().trim().isEmpty()
+                && !binding.inputPassword.getText().toString().trim().isEmpty()
+                && !binding.inputConfirmPassword.getText().toString().trim().isEmpty()){
+            binding.buttonSignUp.setBackgroundTintList(ColorStateList.valueOf(
+                    ContextCompat.getColor(getApplicationContext(), R.color.macos_accent)));
+        }else{
+            binding.buttonSignUp.setBackgroundTintList(ColorStateList.valueOf(
+                    ContextCompat.getColor(getApplicationContext(), R.color.pixiv_blue)));
+        }
     }
 
     private void signUp(){
