@@ -1,10 +1,15 @@
 package com.example.chatapp.activities;
 
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.RadioButton;
-
-import androidx.appcompat.app.AlertDialog;
+import android.widget.TextView;
 
 import com.example.chatapp.R;
 import com.example.chatapp.databinding.ActivityReportBinding;
@@ -154,18 +159,51 @@ public class ReportActivity extends BaseActivity {
     private void showMessageSelectionDialog() {
         if (flaggedMessages.isEmpty()) return;
 
-        String[] messages = new String[flaggedMessages.size()];
+        View popupView = LayoutInflater.from(this).inflate(R.layout.layout_popup_menu, null);
+        LinearLayout menuContainer = (LinearLayout) popupView;
+        menuContainer.removeAllViews();
+        menuContainer.setPadding(0, (int) getResources().getDimension(com.intuit.sdp.R.dimen._4sdp), 0, (int) getResources().getDimension(com.intuit.sdp.R.dimen._4sdp));
+
+        int width = binding.layoutMessageSelector.getWidth();
+        
+        PopupWindow popupWindow = new PopupWindow(
+                popupView,
+                width,
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                true
+        );
+
         for (int i = 0; i < flaggedMessages.size(); i++) {
-            messages[i] = flaggedMessages.get(i).message;
+            ChatMessage message = flaggedMessages.get(i);
+            View itemView = LayoutInflater.from(this).inflate(R.layout.item_message_dropdown, menuContainer, false);
+            TextView textMessage = itemView.findViewById(R.id.textMessage);
+            textMessage.setText(message.message);
+            
+            final int index = i;
+            itemView.setOnClickListener(v -> {
+                selectedMessage = flaggedMessages.get(index);
+                displaySelectedMessage();
+                popupWindow.dismiss();
+            });
+            
+            menuContainer.addView(itemView);
+
+            // Add separator if not the last item
+            if (i < flaggedMessages.size() - 1) {
+                View separator = new View(this);
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, 1);
+                params.setMargins((int) getResources().getDimension(com.intuit.sdp.R.dimen._12sdp), 0,
+                        (int) getResources().getDimension(com.intuit.sdp.R.dimen._12sdp), 0);
+                separator.setLayoutParams(params);
+                separator.setBackgroundColor(getColor(R.color.separator));
+                menuContainer.addView(separator);
+            }
         }
 
-        new AlertDialog.Builder(this)
-                .setTitle("Select a message to report")
-                .setItems(messages, (dialog, which) -> {
-                    selectedMessage = flaggedMessages.get(which);
-                    displaySelectedMessage();
-                })
-                .show();
+        popupWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        popupWindow.setElevation(8f);
+        popupWindow.showAsDropDown(binding.layoutMessageSelector, 0, 0);
     }
 
     private void handleBackAction() {
