@@ -1,4 +1,4 @@
-# Anti-Grooming ChatApp
+## Anti-Grooming ChatApp
 
 The **Anti-Grooming ChatApp** is a secure messaging platform designed to protect users from grooming-related communications. By leveraging real-time semantic detection and AI-powered support, the system creates a safer environment for digital interaction.
 
