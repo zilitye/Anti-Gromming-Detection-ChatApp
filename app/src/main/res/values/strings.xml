@@ -43,7 +43,7 @@
     <string name="search">Search</string>
     <string name="unencrypted_message">Unencrypted Message</string>
     <string name="shield">Shield</string>
-    <string name="alert">Alert</string>
+    <string name="report_profile">Report</string>
     <string name="view_profile">View profile</string>
     <string name="followers">Followers</string>
     <string name="joined">Joined</string>
@@ -51,7 +51,7 @@
     <string name="disappearing_messages">Disappearing messages</string>
     <string name="block_screenshots">Block screenshots</string>
     <string name="off">Off</string>
-    <string name="ai_shield">AI Shield</string>
+    <string name="ai_assistant">AI Assistant</string>
     <string name="more">More</string>
     <string name="safety_analysis">Safety Analysis</string>
     <string name="secure">Secure</string>
@@ -80,6 +80,8 @@
     <string name="mute_conversation">Mute conversation</string>
     <string name="search_conversation">Search conversation</string>
     <string name="delete_conversation">Delete conversation</string>
+    <string name="block_user_confirmation">Are you sure you want to block this user?</string>
+    <string name="block">Block</string>
     <string name="report_user">Reporting %1$s</string>
     <string name="report_review_notice">Your report will be reviewed by our safety team.</string>
     <string name="flagged_message_label">Flagged Message</string>

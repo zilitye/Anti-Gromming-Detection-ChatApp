@@ -496,8 +496,11 @@ public class ChatActivity extends BaseActivity {
 
         binding.imageBack.setOnClickListener(v -> getOnBackPressedDispatcher().onBackPressed());
         binding.layoutSend.setOnClickListener(v -> sendMessage());
-        binding.imageShield.setOnClickListener(v ->
-                startActivity(new Intent(getApplicationContext(), SafetyHubActivity.class)));
+        binding.imageShield.setOnClickListener(v -> {
+            Intent intent = new Intent(getApplicationContext(), SafetyHubActivity.class);
+            intent.putExtra(Constants.KEY_USER, receiverUser);
+            startActivity(intent);
+        });
         binding.imageAlert.setOnClickListener(v -> {
             ChatMessage latestFlaggedMessage = null;
             for (int i = chatMessages.size() - 1; i >= 0; i--) {

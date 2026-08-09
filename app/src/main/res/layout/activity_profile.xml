@@ -84,14 +84,14 @@
                         android:layout_height="match_parent"
                         android:padding="@dimen/_10sdp"
                         android:src="@drawable/ic_shield"
-                        app:tint="@color/secondary_text" />
+                        app:tint="@color/primary_text" />
                 </FrameLayout>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_4sdp"
-                    android:text="@string/ai_shield"
+                    android:text="@string/ai_assistant"
                     android:textColor="@color/secondary_text"
                     android:textSize="@dimen/_9ssp" />
             </LinearLayout>
@@ -113,15 +113,15 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:padding="@dimen/_10sdp"
-                        android:src="@drawable/ic_warning"
-                        app:tint="@color/secondary_text" />
+                        android:src="@drawable/ic_flag"
+                        app:tint="@color/primary_text" />
                 </FrameLayout>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_4sdp"
-                    android:text="@string/alert"
+                    android:text="@string/report_profile"
                     android:textColor="@color/secondary_text"
                     android:textSize="@dimen/_9ssp" />
             </LinearLayout>
@@ -144,7 +144,7 @@
                         android:layout_height="match_parent"
                         android:padding="@dimen/_10sdp"
                         android:src="@drawable/ic_block"
-                        app:tint="@color/secondary_text" />
+                        app:tint="@color/primary_text" />
                 </FrameLayout>
 
                 <TextView
@@ -174,7 +174,7 @@
                         android:layout_height="match_parent"
                         android:padding="@dimen/_8sdp"
                         android:src="@drawable/ic_chevron_down"
-                        app:tint="@color/secondary_text" />
+                        app:tint="@color/primary_text" />
                 </FrameLayout>
 
                 <TextView
@@ -218,7 +218,7 @@
                     <androidx.appcompat.widget.AppCompatImageView
                         android:layout_width="@dimen/_20sdp"
                         android:layout_height="@dimen/_20sdp"
-                        android:src="@drawable/ic_archive"
+                        android:src="@drawable/ic_link"
                         app:tint="@color/primary_text" />
 
                     <TextView
@@ -256,7 +256,7 @@
                     <androidx.appcompat.widget.AppCompatImageView
                         android:layout_width="@dimen/_20sdp"
                         android:layout_height="@dimen/_20sdp"
-                        android:src="@drawable/ic_info"
+                        android:src="@drawable/ic_flagged_outline"
                         app:tint="@color/primary_text" />
 
                     <TextView
@@ -327,8 +327,9 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="@string/analyzing"
-                        android:textColor="@color/macos_accent"
-                        android:textSize="@dimen/_11ssp" />
+                        android:textColor="@color/primary_text"
+                        android:textSize="@dimen/_11ssp"
+                        android:textStyle="bold" />
 
                     <TextView
                         android:id="@+id/textSafetyStatus"
@@ -339,7 +340,8 @@
                         android:paddingVertical="@dimen/_2sdp"
                         android:text="@string/secure"
                         android:textColor="@color/green"
-                        android:textSize="@dimen/_9ssp" />
+                        android:textSize="@dimen/_9ssp"
+                        android:textStyle="bold" />
                 </LinearLayout>
             </LinearLayout>
         </androidx.cardview.widget.CardView>

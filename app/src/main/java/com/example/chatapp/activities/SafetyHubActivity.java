@@ -1,5 +1,6 @@
 package com.example.chatapp.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -40,6 +41,7 @@ public class SafetyHubActivity extends BaseActivity {
     private List<SafetyHubMessage> safetyHubMessages;
     private SafetyHubAdapter safetyHubAdapter;
     private JSONArray chatHistory;
+    private com.example.chatapp.models.User user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +51,7 @@ public class SafetyHubActivity extends BaseActivity {
         applyEdgeToEdge(binding.main);
         conversationContext = getIntent().getStringExtra("conversation");
         if (conversationContext == null) conversationContext = "No context provided.";
+        user = (com.example.chatapp.models.User) getIntent().getSerializableExtra(Constants.KEY_USER);
         init();
         setListeners();
         setupKeyboardListener();
@@ -143,7 +146,12 @@ public class SafetyHubActivity extends BaseActivity {
         });
         popupView.findViewById(R.id.menuReport).setOnClickListener(v -> {
             popupWindow.dismiss();
-            draftReport();
+            Intent intent = new Intent(getApplicationContext(), ReportActivity.class);
+            if (user != null) {
+                intent.putExtra(Constants.KEY_USER_ID, user.id);
+                intent.putExtra(Constants.KEY_NAME, user.name);
+            }
+            startActivity(intent);
         });
         popupView.findViewById(R.id.menuResources).setOnClickListener(v -> {
             popupWindow.dismiss();
@@ -160,10 +168,7 @@ public class SafetyHubActivity extends BaseActivity {
         callOpenAIAPI("Policy Analysis");
     }
 
-    private void draftReport() {
-        addMessage("Report Assistant Requested", true);
-        callOpenAIAPI("Report Assistant");
-    }
+
 
     private void recommendResources() {
         String resources = "Resources & Hotlines\n\n" +

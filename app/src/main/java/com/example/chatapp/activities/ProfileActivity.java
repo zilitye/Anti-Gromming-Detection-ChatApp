@@ -78,25 +78,36 @@ public class ProfileActivity extends BaseActivity {
         binding.layoutActionShield.setOnClickListener(v -> {
             Intent intent = new Intent(getApplicationContext(), SafetyHubActivity.class);
             intent.putExtra("conversation", "Chatting with " + user.name);
+            intent.putExtra(Constants.KEY_USER, user);
             startActivity(intent);
         });
 
         binding.layoutActionAlert.setOnClickListener(v -> {
             Intent intent = new Intent(getApplicationContext(), ReportActivity.class);
             intent.putExtra(Constants.KEY_USER_ID, user.id);
+            intent.putExtra(Constants.KEY_NAME, user.name);
             startActivity(intent);
         });
 
         binding.layoutActionBlock.setOnClickListener(v -> {
-            new androidx.appcompat.app.AlertDialog.Builder(this)
-                    .setTitle(R.string.block_user)
-                    .setMessage("Are you sure you want to block this user?")
-                    .setPositiveButton("Block", (dialog, which) -> {
-                        showToast("User blocked");
-                        // Implementation for blocking user could go here
-                    })
-                    .setNegativeButton(R.string.cancel, null)
-                    .show();
+            View view = getLayoutInflater().inflate(R.layout.layout_dialog_block, null);
+            androidx.appcompat.app.AlertDialog alertDialog = new androidx.appcompat.app.AlertDialog.Builder(this)
+                    .setView(view)
+                    .create();
+
+            if (alertDialog.getWindow() != null) {
+                alertDialog.getWindow().setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(0));
+            }
+
+            view.findViewById(R.id.buttonBlock).setOnClickListener(v1 -> {
+                showToast("User blocked");
+                // Implementation for blocking user could go here
+                alertDialog.dismiss();
+            });
+
+            view.findViewById(R.id.buttonCancel).setOnClickListener(v1 -> alertDialog.dismiss());
+
+            alertDialog.show();
         });
 
         binding.layoutActionMore.setOnClickListener(this::showMoreMenu);

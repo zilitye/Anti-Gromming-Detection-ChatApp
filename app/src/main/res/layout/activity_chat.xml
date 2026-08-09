@@ -78,7 +78,7 @@
         android:layout_height="@dimen/_24sdp"
         android:layout_marginEnd="@dimen/_16sdp"
         android:padding="@dimen/_4sdp"
-        android:src="@drawable/ic_warning"
+        android:src="@drawable/ic_flag"
         app:layout_constraintBottom_toBottomOf="@id/imageBack"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/imageBack"

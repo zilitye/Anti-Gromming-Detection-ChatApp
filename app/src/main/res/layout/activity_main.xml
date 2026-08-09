@@ -116,6 +116,8 @@
         android:contentDescription="@string/app_name"
         android:src="@drawable/ic_add"
         app:backgroundTint="@color/macos_accent"
+        android:outlineAmbientShadowColor="@color/macos_accent"
+        android:outlineSpotShadowColor="@color/macos_accent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:tint="@color/white"
