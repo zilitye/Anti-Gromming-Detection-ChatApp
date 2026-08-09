@@ -4,22 +4,22 @@ The **Anti-Grooming ChatApp** is a secure messaging platform designed to protect
 
 The significance of this application extends beyond individual protection. By logging flagged incidents to a secure cloud backend (Firebase Firestore), the system creates an auditable record that can support institutional reporting, counselling referrals, and policy development.
 
-## 🚀 Demo
+## Demo
 
 [![Download v2.0.0](https://img.shields.io/badge/Download-v2.0.0-blue?style=for-the-badge&logo=android)](https://github.com/zilitye/Anti-Grooming-ChatApp/releases/download/v2.0.0/app-release.apk)
 
 Install and run `app-release.apk`. Requires **Android 7.0 (Nougat)** or higher.
 
-![App Screenshot](image-1.png)
+![App Screenshot]()
 
-## ✨ Features
+## Features
 
 1.  **Real-time Grooming Detection**: Analyzes outgoing messages for language patterns associated with grooming behavior before they are sent, using a rule-based keyword scoring engine.
 2.  **AI-Powered Safety Hub**: A dedicated Safety Assistant powered by **OpenAI**, offering users compassionate, context-aware guidance, reporting pathways, and emotional support.
 3.  **Risk Dashboard & Reporting**: Visualizes the cumulative risk profile of a conversation over time and provides a structured mechanism for reporting unsafe interactions.
 4.  **Secure Communication**: Built on Firebase for reliable, real-time messaging and cloud storage.
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 | Layer | Technology |
 | :--- | :--- |
@@ -31,7 +31,7 @@ Install and run `app-release.apk`. Requires **Android 7.0 (Nougat)** or higher.
 | **HTTP Client** | Retrofit 2 |
 | **Markdown Rendering** | Markwon |
 
-## ⚙️ Setup & Installation
+## Setup & Installation
 
 ### 1. Clone the Repository
 ```bash
@@ -56,5 +56,5 @@ public static final String OPENAI_API_KEY = "YOUR_OPENAI_API_KEY_HERE";
 ### 4. Build and Run
 Open the project in **Android Studio**, sync Gradle, and run the app on your device or emulator.
 
-## 🛡️ Safety & Privacy
-All flagged incidents are stored securely in Firebase Firestore to maintain an auditable trail for safety purposes. Users can access the **Safety Hub** at any time for resources and assistance.
+## Safety & Privacy
+All flagged incidents are stored securely in Firebase Firestore to maintain an auditable trail for safety purposes. Users can access the **Safety Assistant** at any time for resources and assistance.
