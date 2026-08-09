@@ -83,6 +83,9 @@ public class ReportActivity extends BaseActivity {
             selectedMessage = new ChatMessage();
             selectedMessage.message = messageText;
             selectedMessage.flaggedReason = reason;
+            
+            // Add to list so it shows even if fetch fails
+            flaggedMessages.add(selectedMessage);
             displaySelectedMessage();
         } else {
             binding.layoutFlaggedInfo.setVisibility(View.GONE);
@@ -94,29 +97,61 @@ public class ReportActivity extends BaseActivity {
     private void fetchFlaggedMessages() {
         if (receiverId == null) return;
 
+        String currentUserId = preferenceManager.getString(Constants.KEY_USER_ID);
+
+        // Fetch messages sent by the other person to me
         database.collection(Constants.KEY_COLLECTION_CHAT)
                 .whereEqualTo(Constants.KEY_SENDER_ID, receiverId)
-                .whereEqualTo(Constants.KEY_RECEIVER_ID, preferenceManager.getString(Constants.KEY_USER_ID))
+                .whereEqualTo(Constants.KEY_RECEIVER_ID, currentUserId)
                 .whereEqualTo(Constants.KEY_IS_FLAGGED, true)
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
-                    flaggedMessages.clear();
-                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
-                        ChatMessage message = new ChatMessage();
-                        message.id = document.getId();
-                        message.message = document.getString(Constants.KEY_MESSAGE);
-                        message.flaggedReason = document.getString(Constants.KEY_FLAGGED_REASON);
-                        flaggedMessages.add(message);
-                    }
+                    handleFetchedMessages(queryDocumentSnapshots);
                     
-                    if (!flaggedMessages.isEmpty()) {
-                        binding.layoutMessageSelector.setVisibility(View.VISIBLE);
-                        if (selectedMessage == null) {
-                            selectedMessage = flaggedMessages.get(0);
-                            displaySelectedMessage();
-                        }
-                    }
+                    // Also fetch messages sent by me to the other person (in case of appealing a false positive)
+                    database.collection(Constants.KEY_COLLECTION_CHAT)
+                            .whereEqualTo(Constants.KEY_SENDER_ID, currentUserId)
+                            .whereEqualTo(Constants.KEY_RECEIVER_ID, receiverId)
+                            .whereEqualTo(Constants.KEY_IS_FLAGGED, true)
+                            .get()
+                            .addOnSuccessListener(this::handleFetchedMessages);
                 });
+    }
+
+    private void handleFetchedMessages(com.google.firebase.firestore.QuerySnapshot queryDocumentSnapshots) {
+        // We don't clear the list here because we might be adding from multiple queries
+        // But we want to avoid duplicates
+        
+        for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+            String messageId = document.getId();
+            String messageText = document.getString(Constants.KEY_MESSAGE);
+            
+            boolean exists = false;
+            for (ChatMessage existing : flaggedMessages) {
+                if ((existing.id != null && existing.id.equals(messageId)) || 
+                    (existing.id == null && existing.message != null && existing.message.equals(messageText))) {
+                    exists = true;
+                    if (existing.id == null) existing.id = messageId;
+                    break;
+                }
+            }
+            
+            if (!exists) {
+                ChatMessage message = new ChatMessage();
+                message.id = messageId;
+                message.message = messageText;
+                message.flaggedReason = document.getString(Constants.KEY_FLAGGED_REASON);
+                flaggedMessages.add(message);
+            }
+        }
+        
+        if (!flaggedMessages.isEmpty()) {
+            binding.layoutMessageSelector.setVisibility(View.VISIBLE);
+            if (selectedMessage == null) {
+                selectedMessage = flaggedMessages.get(0);
+            }
+            displaySelectedMessage();
+        }
     }
 
     private void displaySelectedMessage() {
@@ -128,6 +163,17 @@ public class ReportActivity extends BaseActivity {
                 binding.textReason.setVisibility(View.VISIBLE);
             } else {
                 binding.textReason.setVisibility(View.GONE);
+            }
+            
+            // Show dropdown icon only if there are more messages to pick from
+            if (flaggedMessages.size() > 1) {
+                binding.imageDropdown.setVisibility(View.VISIBLE);
+                binding.layoutMessageSelector.setClickable(true);
+                binding.layoutMessageSelector.setFocusable(true);
+            } else {
+                binding.imageDropdown.setVisibility(View.GONE);
+                binding.layoutMessageSelector.setClickable(false);
+                binding.layoutMessageSelector.setFocusable(false);
             }
         }
     }
@@ -157,12 +203,12 @@ public class ReportActivity extends BaseActivity {
     }
 
     private void showMessageSelectionDialog() {
-        if (flaggedMessages.isEmpty()) return;
+        if (flaggedMessages.size() <= 1) {
+            return;
+        }
 
-        View popupView = LayoutInflater.from(this).inflate(R.layout.layout_popup_menu, null);
-        LinearLayout menuContainer = (LinearLayout) popupView;
-        menuContainer.removeAllViews();
-        menuContainer.setPadding(0, (int) getResources().getDimension(com.intuit.sdp.R.dimen._4sdp), 0, (int) getResources().getDimension(com.intuit.sdp.R.dimen._4sdp));
+        View popupView = LayoutInflater.from(this).inflate(R.layout.layout_message_dropdown, null);
+        LinearLayout menuContainer = popupView.findViewById(R.id.menuContainer);
 
         int width = binding.layoutMessageSelector.getWidth();
         
@@ -172,6 +218,10 @@ public class ReportActivity extends BaseActivity {
                 ViewGroup.LayoutParams.WRAP_CONTENT,
                 true
         );
+
+        // Set focusable to true to ensure it receives clicks
+        popupWindow.setFocusable(true);
+        popupWindow.setOutsideTouchable(true);
 
         for (int i = 0; i < flaggedMessages.size(); i++) {
             ChatMessage message = flaggedMessages.get(i);
@@ -211,7 +261,18 @@ public class ReportActivity extends BaseActivity {
         }
 
         popupWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        popupWindow.setElevation(8f);
+        popupWindow.setElevation(0f);
+        popupWindow.setAnimationStyle(R.style.DropdownAnimation);
+
+        // Rotate arrow icon
+        binding.imageDropdown.animate().rotation(180f).setDuration(250).start();
+
+        popupWindow.setOnDismissListener(() -> {
+            // Reset arrow icon rotation
+            binding.imageDropdown.animate().rotation(0f).setDuration(250).start();
+        });
+        
+        // Show the popup at the bottom of the selector
         popupWindow.showAsDropDown(binding.layoutMessageSelector, 0, 0);
     }
 

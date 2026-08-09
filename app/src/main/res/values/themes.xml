@@ -22,4 +22,9 @@
         <item name="android:windowExitAnimation">@anim/popup_exit</item>
     </style>
 
+    <style name="DropdownAnimation">
+        <item name="android:windowEnterAnimation">@anim/dropdown_expand</item>
+        <item name="android:windowExitAnimation">@anim/dropdown_collapse</item>
+    </style>
+
 </resources>
