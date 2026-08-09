@@ -22,15 +22,17 @@
 
     <TextView
         android:id="@+id/textTitle"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/_12sdp"
+        android:layout_marginEnd="@dimen/_16sdp"
         android:text="@string/report_incident"
         android:textColor="@color/primary_text"
         android:textSize="@dimen/_12ssp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@id/imageBack"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@id/imageBack"
         app:layout_constraintTop_toTopOf="@id/imageBack"/>
 
     <View
@@ -84,13 +86,15 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:paddingVertical="@dimen/_12sdp"
+                    android:paddingHorizontal="@dimen/_16sdp"
                     android:text="@string/report_cat_harassment"
                     android:textColor="@color/primary_text"
                     android:textSize="@dimen/_12ssp"
                     android:button="@null"
                     android:drawableEnd="?android:attr/listChoiceIndicatorSingle"
                     android:drawableTint="@color/macos_accent"
-                    android:textAlignment="viewStart" />
+                    android:gravity="start|center_vertical"
+                    android:background="?attr/selectableItemBackground" />
 
                 <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/separator" />
 
@@ -99,13 +103,15 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:paddingVertical="@dimen/_12sdp"
+                    android:paddingHorizontal="@dimen/_16sdp"
                     android:text="@string/report_cat_violence"
                     android:textColor="@color/primary_text"
                     android:textSize="@dimen/_12ssp"
                     android:button="@null"
                     android:drawableEnd="?android:attr/listChoiceIndicatorSingle"
                     android:drawableTint="@color/macos_accent"
-                    android:textAlignment="viewStart" />
+                    android:gravity="start|center_vertical"
+                    android:background="?attr/selectableItemBackground" />
 
                 <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/separator" />
 
@@ -114,13 +120,15 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:paddingVertical="@dimen/_12sdp"
+                    android:paddingHorizontal="@dimen/_16sdp"
                     android:text="@string/report_cat_child_safety"
                     android:textColor="@color/primary_text"
                     android:textSize="@dimen/_12ssp"
                     android:button="@null"
                     android:drawableEnd="?android:attr/listChoiceIndicatorSingle"
                     android:drawableTint="@color/macos_accent"
-                    android:textAlignment="viewStart" />
+                    android:gravity="start|center_vertical"
+                    android:background="?attr/selectableItemBackground" />
 
                 <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/separator" />
 
@@ -129,13 +137,15 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:paddingVertical="@dimen/_12sdp"
+                    android:paddingHorizontal="@dimen/_16sdp"
                     android:text="@string/report_cat_privacy"
                     android:textColor="@color/primary_text"
                     android:textSize="@dimen/_12ssp"
                     android:button="@null"
                     android:drawableEnd="?android:attr/listChoiceIndicatorSingle"
                     android:drawableTint="@color/macos_accent"
-                    android:textAlignment="viewStart" />
+                    android:gravity="start|center_vertical"
+                    android:background="?attr/selectableItemBackground" />
 
                 <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/separator" />
 
@@ -144,13 +154,15 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:paddingVertical="@dimen/_12sdp"
+                    android:paddingHorizontal="@dimen/_16sdp"
                     android:text="@string/report_cat_illegal"
                     android:textColor="@color/primary_text"
                     android:textSize="@dimen/_12ssp"
                     android:button="@null"
                     android:drawableEnd="?android:attr/listChoiceIndicatorSingle"
                     android:drawableTint="@color/macos_accent"
-                    android:textAlignment="viewStart" />
+                    android:gravity="start|center_vertical"
+                    android:background="?attr/selectableItemBackground" />
 
                 <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/separator" />
 
@@ -159,13 +171,15 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:paddingVertical="@dimen/_12sdp"
+                    android:paddingHorizontal="@dimen/_16sdp"
                     android:text="@string/report_cat_spam"
                     android:textColor="@color/primary_text"
                     android:textSize="@dimen/_12ssp"
                     android:button="@null"
                     android:drawableEnd="?android:attr/listChoiceIndicatorSingle"
                     android:drawableTint="@color/macos_accent"
-                    android:textAlignment="viewStart" />
+                    android:gravity="start|center_vertical"
+                    android:background="?attr/selectableItemBackground" />
 
                 <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/separator" />
 
@@ -174,13 +188,15 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:paddingVertical="@dimen/_12sdp"
+                    android:paddingHorizontal="@dimen/_16sdp"
                     android:text="@string/report_cat_adult"
                     android:textColor="@color/primary_text"
                     android:textSize="@dimen/_12ssp"
                     android:button="@null"
                     android:drawableEnd="?android:attr/listChoiceIndicatorSingle"
                     android:drawableTint="@color/macos_accent"
-                    android:textAlignment="viewStart" />
+                    android:gravity="start|center_vertical"
+                    android:background="?attr/selectableItemBackground" />
 
             </RadioGroup>
 
@@ -192,7 +208,7 @@
         android:id="@+id/layoutStep2"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:background="@color/primary_dark"
+        android:background="@color/white"
         android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@id/layoutBottom"
         app:layout_constraintTop_toBottomOf="@id/viewSeparator">
@@ -203,106 +219,95 @@
             android:orientation="vertical"
             android:padding="@dimen/_16sdp">
 
-            <androidx.cardview.widget.CardView
+            <TextView
+                android:id="@+id/textReportTarget"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cardCornerRadius="@dimen/_12sdp"
-                app:cardElevation="0dp"
-                app:cardBackgroundColor="@color/white">
+                android:textColor="@color/primary_text"
+                android:textSize="@dimen/_13ssp"
+                android:textStyle="bold"
+                tools:text="Reporting User Name" />
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="@dimen/_16sdp">
-
-                    <TextView
-                        android:id="@+id/textReportTarget"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textColor="@color/primary_text"
-                        android:textSize="@dimen/_13ssp"
-                        android:textStyle="bold"
-                        tools:text="Reporting User Name" />
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/_4sdp"
-                        android:text="@string/report_review_notice"
-                        android:textColor="@color/secondary_text"
-                        android:textSize="@dimen/_10ssp" />
-
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_4sdp"
+                android:text="@string/report_review_notice"
+                android:textColor="@color/secondary_text"
+                android:textSize="@dimen/_10ssp" />
 
             <LinearLayout
                 android:id="@+id/layoutFlaggedInfo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_16sdp"
+                android:layout_marginTop="@dimen/_24sdp"
                 android:orientation="vertical">
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/flagged_message_label"
+                    android:textAllCaps="true"
                     android:textColor="@color/secondary_text"
                     android:textSize="@dimen/_10ssp"
-                    android:textStyle="bold"
-                    android:textAllCaps="true" />
+                    android:textStyle="bold" />
 
-                <androidx.cardview.widget.CardView
+                <TextView
+                    android:id="@+id/textMessageExplanation"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_4sdp"
+                    android:text="@string/select_message_explanation"
+                    android:textColor="@color/secondary_text"
+                    android:textSize="@dimen/_9ssp" />
+
+                <LinearLayout
+                    android:id="@+id/layoutMessageSelector"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_8sdp"
-                    app:cardCornerRadius="@dimen/_12sdp"
-                    app:cardElevation="0dp"
-                    app:cardBackgroundColor="@color/white">
+                    android:background="@drawable/bg_border"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/_12sdp">
 
                     <LinearLayout
-                        android:layout_width="match_parent"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal">
+                        android:layout_weight="1"
+                        android:orientation="vertical">
 
-                        <View
-                            android:layout_width="4dp"
-                            android:layout_height="match_parent"
-                            android:background="@color/red" />
-
-                        <LinearLayout
+                        <TextView
+                            android:id="@+id/textMessage"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:padding="@dimen/_12sdp">
+                            android:lineSpacingExtra="@dimen/_2sdp"
+                            android:textColor="@color/primary_text"
+                            android:textSize="@dimen/_11ssp"
+                            tools:text="Flagged message content goes here..." />
 
-                            <TextView
-                                android:id="@+id/textMessage"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:textColor="@color/primary_text"
-                                android:textSize="@dimen/_11ssp"
-                                android:lineSpacingExtra="@dimen/_2sdp"
-                                tools:text="Flagged message content goes here..." />
+                        <TextView
+                            android:id="@+id/textReason"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/_4sdp"
+                            android:textColor="@color/red"
+                            android:textSize="@dimen/_10ssp"
+                            android:textStyle="italic"
+                            tools:text="Reason: Potential grooming behavior detected." />
 
-                            <View
-                                android:layout_width="match_parent"
-                                android:layout_height="1dp"
-                                android:layout_marginVertical="@dimen/_8sdp"
-                                android:background="@color/separator" />
-
-                            <TextView
-                                android:id="@+id/textReason"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:textColor="@color/red"
-                                android:textSize="@dimen/_10ssp"
-                                android:textStyle="italic"
-                                tools:text="Reason: Potential grooming behavior detected." />
-
-                        </LinearLayout>
                     </LinearLayout>
-                </androidx.cardview.widget.CardView>
+
+                    <ImageView
+                        android:layout_width="@dimen/_20sdp"
+                        android:layout_height="@dimen/_20sdp"
+                        android:layout_gravity="center_vertical"
+                        android:contentDescription="@null"
+                        android:src="@drawable/ic_chevron_down"
+                        app:tint="@color/secondary_text" />
+
+                </LinearLayout>
             </LinearLayout>
 
             <TextView
@@ -310,34 +315,26 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/_24sdp"
                 android:text="@string/provide_feedback"
+                android:textAllCaps="true"
                 android:textColor="@color/secondary_text"
                 android:textSize="@dimen/_10ssp"
-                android:textStyle="bold"
-                android:textAllCaps="true" />
+                android:textStyle="bold" />
 
-            <androidx.cardview.widget.CardView
+            <EditText
+                android:id="@+id/inputFeedback"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/_8sdp"
-                app:cardCornerRadius="@dimen/_12sdp"
-                app:cardElevation="0dp"
-                app:cardBackgroundColor="@color/white">
-
-                <EditText
-                    android:id="@+id/inputFeedback"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@null"
-                    android:gravity="top"
-                    android:hint="@string/report_feedback_hint"
-                    android:importantForAutofill="no"
-                    android:inputType="textMultiLine"
-                    android:minHeight="@dimen/_100sdp"
-                    android:padding="@dimen/_12sdp"
-                    android:textColor="@color/primary_text"
-                    android:textColorHint="@color/secondary_text"
-                    android:textSize="@dimen/_11ssp" />
-            </androidx.cardview.widget.CardView>
+                android:background="@drawable/bg_border"
+                android:gravity="top"
+                android:hint="@string/report_feedback_hint"
+                android:importantForAutofill="no"
+                android:inputType="textMultiLine"
+                android:minHeight="@dimen/_100sdp"
+                android:padding="@dimen/_12sdp"
+                android:textColor="@color/primary_text"
+                android:textColorHint="@color/secondary_text"
+                android:textSize="@dimen/_11ssp" />
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

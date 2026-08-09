@@ -4,14 +4,20 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.RadioButton;
 
+import androidx.appcompat.app.AlertDialog;
+
 import com.example.chatapp.R;
 import com.example.chatapp.databinding.ActivityReportBinding;
+import com.example.chatapp.models.ChatMessage;
 import com.example.chatapp.utilities.Constants;
 import com.example.chatapp.utilities.PreferenceManager;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 public class ReportActivity extends BaseActivity {
 
@@ -22,6 +28,8 @@ public class ReportActivity extends BaseActivity {
     private int riskScore;
     private int currentStep = 1;
     private String selectedCategory = "";
+    private List<ChatMessage> flaggedMessages;
+    private ChatMessage selectedMessage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +45,7 @@ public class ReportActivity extends BaseActivity {
     private void init() {
         database = FirebaseFirestore.getInstance();
         preferenceManager = new PreferenceManager(getApplicationContext());
+        flaggedMessages = new ArrayList<>();
         updateStepUI();
     }
 
@@ -59,23 +68,62 @@ public class ReportActivity extends BaseActivity {
         String receiverName = getIntent().getStringExtra(Constants.KEY_NAME);
         riskScore = getIntent().getIntExtra(Constants.KEY_RISK_SCORE, 0);
         String reason = getIntent().getStringExtra(Constants.KEY_RISK_LEVEL);
-        String message = getIntent().getStringExtra(Constants.KEY_MESSAGE);
+        String messageText = getIntent().getStringExtra(Constants.KEY_MESSAGE);
         
         if (receiverName != null) {
             binding.textReportTarget.setText(getString(R.string.report_user, receiverName));
         }
 
-        if (message != null && !message.trim().isEmpty()) {
+        if (messageText != null && !messageText.trim().isEmpty()) {
+            selectedMessage = new ChatMessage();
+            selectedMessage.message = messageText;
+            selectedMessage.flaggedReason = reason;
+            displaySelectedMessage();
+        } else {
+            binding.layoutFlaggedInfo.setVisibility(View.GONE);
+        }
+
+        fetchFlaggedMessages();
+    }
+
+    private void fetchFlaggedMessages() {
+        if (receiverId == null) return;
+
+        database.collection(Constants.KEY_COLLECTION_CHAT)
+                .whereEqualTo(Constants.KEY_SENDER_ID, receiverId)
+                .whereEqualTo(Constants.KEY_RECEIVER_ID, preferenceManager.getString(Constants.KEY_USER_ID))
+                .whereEqualTo(Constants.KEY_IS_FLAGGED, true)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    flaggedMessages.clear();
+                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                        ChatMessage message = new ChatMessage();
+                        message.id = document.getId();
+                        message.message = document.getString(Constants.KEY_MESSAGE);
+                        message.flaggedReason = document.getString(Constants.KEY_FLAGGED_REASON);
+                        flaggedMessages.add(message);
+                    }
+                    
+                    if (!flaggedMessages.isEmpty()) {
+                        binding.layoutMessageSelector.setVisibility(View.VISIBLE);
+                        if (selectedMessage == null) {
+                            selectedMessage = flaggedMessages.get(0);
+                            displaySelectedMessage();
+                        }
+                    }
+                });
+    }
+
+    private void displaySelectedMessage() {
+        if (selectedMessage != null) {
             binding.layoutFlaggedInfo.setVisibility(View.VISIBLE);
-            binding.textMessage.setText(message);
-            if (reason != null && !reason.trim().isEmpty()) {
-                binding.textReason.setText(String.format("Reason: %s", reason));
+            binding.textMessage.setText(selectedMessage.message);
+            if (selectedMessage.flaggedReason != null && !selectedMessage.flaggedReason.trim().isEmpty()) {
+                binding.textReason.setText(String.format("Reason: %s", selectedMessage.flaggedReason));
                 binding.textReason.setVisibility(View.VISIBLE);
             } else {
                 binding.textReason.setVisibility(View.GONE);
             }
-        } else {
-            binding.layoutFlaggedInfo.setVisibility(View.GONE);
         }
     }
 
@@ -97,8 +145,27 @@ public class ReportActivity extends BaseActivity {
                 submitReport();
             }
         });
+
+        binding.layoutMessageSelector.setOnClickListener(v -> showMessageSelectionDialog());
         
         binding.inputFeedback.setOnFocusChangeListener((v, hasFocus) -> binding.inputFeedback.setActivated(hasFocus));
+    }
+
+    private void showMessageSelectionDialog() {
+        if (flaggedMessages.isEmpty()) return;
+
+        String[] messages = new String[flaggedMessages.size()];
+        for (int i = 0; i < flaggedMessages.size(); i++) {
+            messages[i] = flaggedMessages.get(i).message;
+        }
+
+        new AlertDialog.Builder(this)
+                .setTitle("Select a message to report")
+                .setItems(messages, (dialog, which) -> {
+                    selectedMessage = flaggedMessages.get(which);
+                    displaySelectedMessage();
+                })
+                .show();
     }
 
     private void handleBackAction() {
@@ -119,7 +186,7 @@ public class ReportActivity extends BaseActivity {
         HashMap<String, Object> incident = new HashMap<>();
         incident.put(Constants.KEY_SENDER_ID, preferenceManager.getString(Constants.KEY_USER_ID));
         incident.put(Constants.KEY_RECEIVER_ID, receiverId);
-        incident.put(Constants.KEY_MESSAGE, binding.textMessage.getText().toString());
+        incident.put(Constants.KEY_MESSAGE, selectedMessage != null ? selectedMessage.message : "");
         incident.put(Constants.KEY_TIMESTAMP, new Date());
         incident.put(Constants.KEY_IS_FLAGGED, true);
         incident.put(Constants.KEY_RISK_SCORE, riskScore);

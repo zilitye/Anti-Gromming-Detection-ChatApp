@@ -17,16 +17,16 @@
     <string name="risk_score">Risk Score</string>
     <string name="safety_summary">Safety Summary</string>
     <string name="open_safety_hub">Open Safety Assistant</string>
-    <string name="report_incident">Report Incident</string>
+    <string name="report_incident">Report an issue</string>
     <string name="chat_with">Chat with %1$s</string>
     <string name="safety_report">Safety Report</string>
     <string name="why_flagged">Why was this flagged?</string>
     <string name="flagged_content">Flagged Content</string>
     <string name="your_message">Conversation Context</string>
-    <string name="provide_feedback">Provide Feedback (Optional)</string>
+    <string name="provide_feedback">Provide Feedback</string>
     <string name="feedback_hint_manual">Explain why it should be flagged...</string>
     <string name="feedback_hint_ai">Explain if this was flagged wrongly...</string>
-    <string name="submit_report">Submit Official Report</string>
+    <string name="submit_report">Submit Report</string>
     <string name="view_resources">View Safety Resources</string>
     <string name="safety_hub">Safety Assistant</string>
     <string name="safety_hub_welcome">Hi there! I\'m your Safety Assistant. I\'m here to help you stay safe online.\n\nHow can I help you today?</string>
@@ -98,4 +98,6 @@
     <string name="report_cat_misleading">Misleading or deceptive</string>
     <string name="report_cat_terrorism">Terrorism or violent extremism</string>
     <string name="report_details">Report details</string>
+    <string name="change">Change</string>
+    <string name="select_message_explanation">Please select the specific message you want to report.</string>
 </resources>
