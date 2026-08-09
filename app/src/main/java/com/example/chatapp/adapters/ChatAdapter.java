@@ -124,11 +124,9 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
             }
             binding.textName.setText(user.name);
             binding.imageVerified.setVisibility(android.view.View.GONE);
-            binding.textUsername.setText(binding.getRoot().getContext().getString(R.string.username_format, user.email));
+            binding.textUsername.setText(user.email);
             binding.textStats.setVisibility(android.view.View.GONE);
-            binding.buttonViewProfile.setBackgroundTintList(android.content.res.ColorStateList.valueOf(
-                    androidx.core.content.ContextCompat.getColor(binding.getRoot().getContext(), R.color.macos_accent)
-            ));
+            binding.buttonViewProfile.setVisibility(android.view.View.GONE);
             binding.buttonViewProfile.setOnClickListener(v -> {
                 if(listener != null) listener.onViewProfileClicked();
             });

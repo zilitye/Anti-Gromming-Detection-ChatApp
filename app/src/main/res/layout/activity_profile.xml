@@ -24,18 +24,6 @@
             app:layout_constraintTop_toTopOf="parent"
             app:tint="@color/primary_text" />
 
-        <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/imageEdit"
-            android:layout_width="@dimen/_30sdp"
-            android:layout_height="@dimen/_30sdp"
-            android:layout_marginEnd="@dimen/_16sdp"
-            android:padding="@dimen/_6sdp"
-            android:src="@drawable/ic_ai"
-            app:layout_constraintBottom_toBottomOf="@id/imageBack"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/imageBack"
-            app:tint="@color/primary_text" />
-
         <com.makeramen.roundedimageview.RoundedImageView
             android:id="@+id/imageProfile"
             android:layout_width="@dimen/_80sdp"
@@ -58,16 +46,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/imageProfile" />
-
-        <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/imageVerified"
-            android:layout_width="@dimen/_16sdp"
-            android:layout_height="@dimen/_16sdp"
-            android:layout_marginStart="@dimen/_4sdp"
-            android:src="@drawable/ic_verified"
-            app:layout_constraintBottom_toBottomOf="@id/textName"
-            app:layout_constraintStart_toEndOf="@id/textName"
-            app:layout_constraintTop_toTopOf="@id/textName" />
 
         <TextView
             android:id="@+id/textUsername"
@@ -149,7 +127,7 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/layoutActionProfile"
+                android:id="@+id/layoutActionBlock"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/_24sdp"
@@ -165,7 +143,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:padding="@dimen/_10sdp"
-                        android:src="@drawable/ic_ai"
+                        android:src="@drawable/ic_block"
                         app:tint="@color/secondary_text" />
                 </FrameLayout>
 
@@ -173,7 +151,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_4sdp"
-                    android:text="@string/profile"
+                    android:text="@string/block_user"
                     android:textColor="@color/secondary_text"
                     android:textSize="@dimen/_9ssp" />
             </LinearLayout>
@@ -248,7 +226,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/_12sdp"
                         android:layout_weight="1"
-                        android:text="@string/media_links_docs"
+                        android:text="@string/links"
                         android:textColor="@color/primary_text"
                         android:textSize="@dimen/_12ssp" />
 
@@ -265,7 +243,7 @@
                     android:layout_marginStart="@dimen/_44sdp"
                     android:background="@color/separator" />
 
-                <!-- Disappearing Messages -->
+                <!-- Flagged Messages -->
                 <LinearLayout
                     android:id="@+id/layoutDisappearing"
                     android:layout_width="match_parent"
@@ -286,63 +264,9 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/_12sdp"
                         android:layout_weight="1"
-                        android:text="@string/disappearing_messages"
+                        android:text="@string/flagged_message"
                         android:textColor="@color/primary_text"
                         android:textSize="@dimen/_12ssp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="@dimen/_4sdp"
-                        android:text="@string/off"
-                        android:textColor="@color/secondary_text"
-                        android:textSize="@dimen/_10ssp" />
-
-                    <androidx.appcompat.widget.AppCompatImageView
-                        android:layout_width="@dimen/_16sdp"
-                        android:layout_height="@dimen/_16sdp"
-                        android:src="@drawable/ic_chevron_right"
-                        app:tint="@color/secondary_text" />
-                </LinearLayout>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginStart="@dimen/_44sdp"
-                    android:background="@color/separator" />
-
-                <!-- Block Screenshots -->
-                <LinearLayout
-                    android:id="@+id/layoutBlockScreenshots"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="?attr/selectableItemBackground"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:padding="@dimen/_12sdp">
-
-                    <androidx.appcompat.widget.AppCompatImageView
-                        android:layout_width="@dimen/_20sdp"
-                        android:layout_height="@dimen/_20sdp"
-                        android:src="@drawable/ic_warning"
-                        app:tint="@color/primary_text" />
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/_12sdp"
-                        android:layout_weight="1"
-                        android:text="@string/block_screenshots"
-                        android:textColor="@color/primary_text"
-                        android:textSize="@dimen/_12ssp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="@dimen/_4sdp"
-                        android:text="@string/off"
-                        android:textColor="@color/secondary_text"
-                        android:textSize="@dimen/_10ssp" />
 
                     <androidx.appcompat.widget.AppCompatImageView
                         android:layout_width="@dimen/_16sdp"
@@ -379,6 +303,16 @@
                     android:textColor="@color/primary_text"
                     android:textSize="@dimen/_12ssp"
                     android:textStyle="bold" />
+
+                <ProgressBar
+                    android:id="@+id/progressBarSafety"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_8sdp"
+                    android:max="100"
+                    android:progress="0"
+                    android:progressTint="@color/macos_accent" />
 
                 <LinearLayout
                     android:layout_width="match_parent"

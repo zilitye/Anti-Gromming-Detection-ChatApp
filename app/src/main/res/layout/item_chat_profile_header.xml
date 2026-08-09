@@ -35,7 +35,7 @@
             android:layout_height="@dimen/_16sdp"
             android:layout_marginStart="@dimen/_4sdp"
             android:src="@drawable/ic_verified"
-            android:visibility="visible" />
+            android:visibility="gone" />
     </LinearLayout>
 
     <TextView
@@ -68,6 +68,7 @@
         android:textColor="@color/white"
         android:textSize="@dimen/_12ssp"
         android:textStyle="bold"
+        android:visibility="gone"
         app:cornerRadius="@dimen/_20sdp" />
 
 </LinearLayout>

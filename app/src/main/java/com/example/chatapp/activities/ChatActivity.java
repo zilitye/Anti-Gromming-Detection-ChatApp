@@ -411,6 +411,8 @@ public class ChatActivity extends BaseActivity {
                     isReceiverAvailable = availability == 1;
                 }
                 receiverUser.token = value.getString(Constants.KEY_FCM_TOKEN);
+                receiverUser.email = value.getString(Constants.KEY_EMAIL);
+                chatAdapter.notifyItemChanged(0);
                 if(receiverUser.image == null){
                     receiverUser.image = value.getString(Constants.KEY_IMAGE);
                     chatAdapter.setReceiverProfileImage(getBitmapFromEncodedString(receiverUser.image));
