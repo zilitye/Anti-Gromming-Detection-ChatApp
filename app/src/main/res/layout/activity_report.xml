@@ -21,9 +21,10 @@
         app:tint="@color/primary_text"/>
 
     <TextView
+        android:id="@+id/textTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/safety_report"
+        android:text="@string/report_incident"
         android:textColor="@color/primary_text"
         android:textSize="@dimen/_12ssp"
         android:textStyle="bold"
@@ -40,104 +41,326 @@
         android:background="@color/separator"
         app:layout_constraintTop_toBottomOf="@id/imageBack" />
 
-    <ScrollView
+    <!-- Step 1: Category Selection -->
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/layoutStep1"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@id/buttonSubmitReport"
+        android:visibility="visible"
+        app:layout_constraintBottom_toTopOf="@id/layoutBottom"
         app:layout_constraintTop_toBottomOf="@id/viewSeparator">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="@dimen/_20sdp">
+            android:padding="@dimen/_16sdp">
 
-            <LinearLayout
-                android:id="@+id/layoutReason"
+            <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:text="@string/report_question"
+                android:textColor="@color/primary_text"
+                android:textSize="@dimen/_16ssp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_12sdp"
+                android:text="@string/report_instruction"
+                android:textColor="@color/secondary_text"
+                android:textSize="@dimen/_11ssp" />
+
+            <RadioGroup
+                android:id="@+id/radioGroupCategories"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_16sdp"
+                android:orientation="vertical">
+
+                <RadioButton
+                    android:id="@+id/catHarassment"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingVertical="@dimen/_12sdp"
+                    android:text="@string/report_cat_harassment"
+                    android:textColor="@color/primary_text"
+                    android:textSize="@dimen/_12ssp"
+                    android:button="@null"
+                    android:drawableEnd="?android:attr/listChoiceIndicatorSingle"
+                    android:drawableTint="@color/macos_accent"
+                    android:textAlignment="viewStart" />
+
+                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/separator" />
+
+                <RadioButton
+                    android:id="@+id/catViolence"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingVertical="@dimen/_12sdp"
+                    android:text="@string/report_cat_violence"
+                    android:textColor="@color/primary_text"
+                    android:textSize="@dimen/_12ssp"
+                    android:button="@null"
+                    android:drawableEnd="?android:attr/listChoiceIndicatorSingle"
+                    android:drawableTint="@color/macos_accent"
+                    android:textAlignment="viewStart" />
+
+                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/separator" />
+
+                <RadioButton
+                    android:id="@+id/catChildSafety"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingVertical="@dimen/_12sdp"
+                    android:text="@string/report_cat_child_safety"
+                    android:textColor="@color/primary_text"
+                    android:textSize="@dimen/_12ssp"
+                    android:button="@null"
+                    android:drawableEnd="?android:attr/listChoiceIndicatorSingle"
+                    android:drawableTint="@color/macos_accent"
+                    android:textAlignment="viewStart" />
+
+                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/separator" />
+
+                <RadioButton
+                    android:id="@+id/catPrivacy"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingVertical="@dimen/_12sdp"
+                    android:text="@string/report_cat_privacy"
+                    android:textColor="@color/primary_text"
+                    android:textSize="@dimen/_12ssp"
+                    android:button="@null"
+                    android:drawableEnd="?android:attr/listChoiceIndicatorSingle"
+                    android:drawableTint="@color/macos_accent"
+                    android:textAlignment="viewStart" />
+
+                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/separator" />
+
+                <RadioButton
+                    android:id="@+id/catIllegal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingVertical="@dimen/_12sdp"
+                    android:text="@string/report_cat_illegal"
+                    android:textColor="@color/primary_text"
+                    android:textSize="@dimen/_12ssp"
+                    android:button="@null"
+                    android:drawableEnd="?android:attr/listChoiceIndicatorSingle"
+                    android:drawableTint="@color/macos_accent"
+                    android:textAlignment="viewStart" />
+
+                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/separator" />
+
+                <RadioButton
+                    android:id="@+id/catSpam"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingVertical="@dimen/_12sdp"
+                    android:text="@string/report_cat_spam"
+                    android:textColor="@color/primary_text"
+                    android:textSize="@dimen/_12ssp"
+                    android:button="@null"
+                    android:drawableEnd="?android:attr/listChoiceIndicatorSingle"
+                    android:drawableTint="@color/macos_accent"
+                    android:textAlignment="viewStart" />
+
+                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/separator" />
+
+                <RadioButton
+                    android:id="@+id/catAdult"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingVertical="@dimen/_12sdp"
+                    android:text="@string/report_cat_adult"
+                    android:textColor="@color/primary_text"
+                    android:textSize="@dimen/_12ssp"
+                    android:button="@null"
+                    android:drawableEnd="?android:attr/listChoiceIndicatorSingle"
+                    android:drawableTint="@color/macos_accent"
+                    android:textAlignment="viewStart" />
+
+            </RadioGroup>
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- Step 2: Evidence & Details -->
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/layoutStep2"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@color/primary_dark"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/layoutBottom"
+        app:layout_constraintTop_toBottomOf="@id/viewSeparator">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/_16sdp">
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="@dimen/_12sdp"
+                app:cardElevation="0dp"
+                app:cardBackgroundColor="@color/white">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/_16sdp">
+
+                    <TextView
+                        android:id="@+id/textReportTarget"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/primary_text"
+                        android:textSize="@dimen/_13ssp"
+                        android:textStyle="bold"
+                        tools:text="Reporting User Name" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/_4sdp"
+                        android:text="@string/report_review_notice"
+                        android:textColor="@color/secondary_text"
+                        android:textSize="@dimen/_10ssp" />
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <LinearLayout
+                android:id="@+id/layoutFlaggedInfo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_16sdp"
                 android:orientation="vertical">
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/why_flagged"
-                    android:textColor="@color/primary_text"
-                    android:textSize="@dimen/_14ssp"
-                    android:textStyle="bold"/>
+                    android:text="@string/flagged_message_label"
+                    android:textColor="@color/secondary_text"
+                    android:textSize="@dimen/_10ssp"
+                    android:textStyle="bold"
+                    android:textAllCaps="true" />
 
-                <TextView
-                    android:id="@+id/textReason"
+                <androidx.cardview.widget.CardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_8sdp"
-                    android:textColor="@color/secondary_text"
-                    android:textSize="@dimen/_11ssp"/>
+                    app:cardCornerRadius="@dimen/_12sdp"
+                    app:cardElevation="0dp"
+                    app:cardBackgroundColor="@color/white">
 
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <View
+                            android:layout_width="4dp"
+                            android:layout_height="match_parent"
+                            android:background="@color/red" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="@dimen/_12sdp">
+
+                            <TextView
+                                android:id="@+id/textMessage"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/primary_text"
+                                android:textSize="@dimen/_11ssp"
+                                android:lineSpacingExtra="@dimen/_2sdp"
+                                tools:text="Flagged message content goes here..." />
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:layout_marginVertical="@dimen/_8sdp"
+                                android:background="@color/separator" />
+
+                            <TextView
+                                android:id="@+id/textReason"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/red"
+                                android:textSize="@dimen/_10ssp"
+                                android:textStyle="italic"
+                                tools:text="Reason: Potential grooming behavior detected." />
+
+                        </LinearLayout>
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
             </LinearLayout>
-
-            <TextView
-                android:id="@+id/headerContext"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_24sdp"
-                android:text="@string/your_message"
-                android:textColor="@color/primary_text"
-                android:textSize="@dimen/_14ssp"
-                android:textStyle="bold"/>
-
-            <TextView
-                android:id="@+id/textMessage"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_8sdp"
-                android:background="@drawable/background_chat_input_refined"
-                android:minHeight="@dimen/_40sdp"
-                android:padding="@dimen/_16sdp"
-                android:textColor="@color/primary_text"
-                android:textSize="@dimen/_11ssp"
-                android:lineSpacingExtra="@dimen/_2sdp"/>
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/_24sdp"
                 android:text="@string/provide_feedback"
-                android:textColor="@color/primary_text"
-                android:textSize="@dimen/_14ssp"
-                android:textStyle="bold"/>
+                android:textColor="@color/secondary_text"
+                android:textSize="@dimen/_10ssp"
+                android:textStyle="bold"
+                android:textAllCaps="true" />
 
-            <EditText
-                android:id="@+id/inputFeedback"
+            <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/_8sdp"
-                android:background="@drawable/background_chat_input_refined"
-                android:importantForAutofill="no"
-                android:inputType="textMultiLine"
-                android:minHeight="@dimen/_80sdp"
-                android:gravity="top"
-                android:padding="@dimen/_12sdp"
-                android:textColor="@color/primary_text"
-                android:textColorHint="@color/secondary_text"
-                android:textSize="@dimen/_11ssp"/>
+                app:cardCornerRadius="@dimen/_12sdp"
+                app:cardElevation="0dp"
+                app:cardBackgroundColor="@color/white">
+
+                <EditText
+                    android:id="@+id/inputFeedback"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@null"
+                    android:gravity="top"
+                    android:hint="@string/report_feedback_hint"
+                    android:importantForAutofill="no"
+                    android:inputType="textMultiLine"
+                    android:minHeight="@dimen/_100sdp"
+                    android:padding="@dimen/_12sdp"
+                    android:textColor="@color/primary_text"
+                    android:textColorHint="@color/secondary_text"
+                    android:textSize="@dimen/_11ssp" />
+            </androidx.cardview.widget.CardView>
 
         </LinearLayout>
-    </ScrollView>
+    </androidx.core.widget.NestedScrollView>
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/buttonSubmitReport"
+    <FrameLayout
+        android:id="@+id/layoutBottom"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/_40sdp"
-        android:layout_marginHorizontal="@dimen/_20sdp"
-        android:layout_marginBottom="@dimen/_20sdp"
-        android:text="@string/submit_report"
-        android:textColor="@color/white"
-        android:textSize="@dimen/_10ssp"
-        android:textAllCaps="true"
-        android:textStyle="bold"
-        app:backgroundTint="@color/macos_accent"
-        app:cornerRadius="@dimen/_20sdp"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:padding="@dimen/_16sdp"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/buttonAction"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_45sdp"
+            android:text="@string/next"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_11ssp"
+            android:textAllCaps="false"
+            android:textStyle="bold"
+            app:backgroundTint="@color/macos_accent"
+            app:cornerRadius="@dimen/_25sdp" />
+    </FrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

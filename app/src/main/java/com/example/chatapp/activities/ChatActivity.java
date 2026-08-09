@@ -499,22 +499,27 @@ public class ChatActivity extends BaseActivity {
         binding.imageShield.setOnClickListener(v ->
                 startActivity(new Intent(getApplicationContext(), SafetyHubActivity.class)));
         binding.imageAlert.setOnClickListener(v -> {
-            String currentUserId = preferenceManager.getString(Constants.KEY_USER_ID);
-            List<String> senderMessages = new ArrayList<>();
-            int count = 0;
-            for (int i = chatMessages.size() - 1; i >= 0 && count < 5; i--) {
-                if (chatMessages.get(i).senderId.equals(currentUserId)) {
-                    senderMessages.add(chatMessages.get(i).message);
-                    count++;
+            ChatMessage latestFlaggedMessage = null;
+            for (int i = chatMessages.size() - 1; i >= 0; i--) {
+                if (chatMessages.get(i).isFlagged) {
+                    latestFlaggedMessage = chatMessages.get(i);
+                    break;
                 }
             }
-            java.util.Collections.reverse(senderMessages);
-            StringBuilder contextBuilder = new StringBuilder();
-            for (String m : senderMessages) contextBuilder.append(m).append("\n");
 
             Intent intent = new Intent(getApplicationContext(), ReportActivity.class);
             intent.putExtra(Constants.KEY_USER_ID, receiverUser.id);
-            intent.putExtra(Constants.KEY_MESSAGE, contextBuilder.toString());
+            intent.putExtra(Constants.KEY_NAME, receiverUser.name);
+            
+            if (latestFlaggedMessage != null) {
+                intent.putExtra(Constants.KEY_MESSAGE, latestFlaggedMessage.message);
+                intent.putExtra(Constants.KEY_RISK_LEVEL, latestFlaggedMessage.flaggedReason);
+                // We don't have the score in the ChatMessage model currently, but we can pass a default or keep it 0
+                intent.putExtra(Constants.KEY_RISK_SCORE, 0); 
+            } else {
+                // If no flagged message, just pass the user ID for a general report
+                intent.putExtra(Constants.KEY_MESSAGE, "");
+            }
             startActivity(intent);
         });
         binding.imageProfileHeader.setOnClickListener(v -> openProfile());

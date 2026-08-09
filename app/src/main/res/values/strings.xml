@@ -80,4 +80,22 @@
     <string name="mute_conversation">Mute conversation</string>
     <string name="search_conversation">Search conversation</string>
     <string name="delete_conversation">Delete conversation</string>
+    <string name="report_user">Reporting %1$s</string>
+    <string name="report_review_notice">Your report will be reviewed by our safety team.</string>
+    <string name="flagged_message_label">Flagged Message</string>
+    <string name="report_feedback_hint">Tell us more about what happened...</string>
+    <string name="report_question">What are you reporting?</string>
+    <string name="report_instruction">Please select the category that best describes your issue.</string>
+    <string name="next">Next</string>
+    <string name="report_cat_harassment">Hate speech, harassment or bullying</string>
+    <string name="report_cat_violence">Violence</string>
+    <string name="report_cat_child_safety">Child safety</string>
+    <string name="report_cat_privacy">Privacy or non-consensual content</string>
+    <string name="report_cat_illegal">Illegal or regulated goods</string>
+    <string name="report_cat_spam">Spam</string>
+    <string name="report_cat_suicide">Suicide or self-harm</string>
+    <string name="report_cat_adult">Adult content</string>
+    <string name="report_cat_misleading">Misleading or deceptive</string>
+    <string name="report_cat_terrorism">Terrorism or violent extremism</string>
+    <string name="report_details">Report details</string>
 </resources>
