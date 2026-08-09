@@ -1,6 +1,5 @@
 package com.example.chatapp.activities;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -79,10 +78,8 @@ public class MainActivity extends BaseActivity implements ConversionListener {
 
     private void askNotificationPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS) ==
+            if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS) !=
                     PackageManager.PERMISSION_GRANTED) {
-                // Permission is already granted
-            } else {
                 // Directly ask for the permission
                 requestPermissionLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS);
             }
@@ -216,7 +213,7 @@ public class MainActivity extends BaseActivity implements ConversionListener {
                     }
                 }
             }
-            Collections.sort(conversations, (obj1, obj2) -> obj2.dateObject.compareTo(obj1.dateObject));
+            conversations.sort((obj1, obj2) -> obj2.dateObject.compareTo(obj1.dateObject));
             conversationsAdapter.updateFullList(conversations);
             conversationsAdapter.notifyDataSetChanged();
             binding.conversationsRecyclerView.smoothScrollToPosition(0);

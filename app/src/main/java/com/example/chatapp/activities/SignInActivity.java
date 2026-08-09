@@ -82,7 +82,7 @@ public class SignInActivity extends BaseActivity {
                 .get()
                 .addOnCompleteListener(task -> {
                     if(task.isSuccessful() && task.getResult() != null
-                    && task.getResult().getDocuments().size() > 0){
+                    && !task.getResult().getDocuments().isEmpty()){
                         DocumentSnapshot documentSnapshot = task.getResult().getDocuments().get(0);
                         preferenceManager.putBoolean(Constants.KEY_IS_SIGNED_IN, true);
                         preferenceManager.putString(Constants.KEY_USER_ID, documentSnapshot.getId());

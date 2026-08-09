@@ -60,7 +60,7 @@ object NLPGroomingEngine {
     data class NLPResult(
         val riskLevel: GroomingDetector.RiskLevel,
         val score: Int,
-        val reason: String
+        val reason: String,
     )
 
     /**
@@ -77,7 +77,7 @@ object NLPGroomingEngine {
         val examples: List<String>
     ) {
         SEXUAL_SOLICITATION(
-            weight = 45,
+            weight = 50,
             threshold = 0.42f,
             label = "sexual solicitation",
             examples = listOf(
@@ -157,7 +157,7 @@ object NLPGroomingEngine {
 
                     // ONNX Runtime needs a real file path, so copy the (larger)
                     // model out of the APK's compressed assets once, on first run.
-                    if (!modelFile.exists() || modelFile.length() == 0L) {
+                    if (!(modelFile.exists() && modelFile.length() > 0L)) {
                         copyAssetToFile(appContext, MODEL_ASSET, modelFile)
                     }
                     // The tokenizer is small; read it straight into memory each time.
@@ -175,7 +175,7 @@ object NLPGroomingEngine {
 
                     // Pre-compute reference embeddings once, up front, so
                     // per-message analysis only has to embed the message itself.
-                    categoryEmbeddings = RiskCategory.values().associateWith { category ->
+                    categoryEmbeddings = RiskCategory.entries.associateWith { category ->
                         category.examples.map { sentenceEmbedding.encode(it) }
                     }
 
@@ -206,7 +206,7 @@ object NLPGroomingEngine {
         var totalScore = 0
         val matched = mutableListOf<String>()
 
-        for (category in RiskCategory.values()) {
+        for (category in RiskCategory.entries) {
             val examples = categoryEmbeddings[category].orEmpty()
             val bestSimilarity = examples.maxOfOrNull { cosineSimilarity(embedding, it) } ?: 0f
             if (bestSimilarity >= category.threshold) {

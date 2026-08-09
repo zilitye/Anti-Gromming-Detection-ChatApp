@@ -45,7 +45,7 @@ public class SignUpActivity extends BaseActivity {
     }
 
     private void setListeners(){
-        binding.buttonSignInLink.setOnClickListener(v -> onBackPressed());
+        binding.buttonSignInLink.setOnClickListener(v -> getOnBackPressedDispatcher().onBackPressed());
         binding.buttonSignUp.setOnClickListener(v -> {
             if(isValidSignUpDetails()){
                 signUp();
