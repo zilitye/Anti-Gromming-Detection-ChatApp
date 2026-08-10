@@ -10,8 +10,8 @@ The significance of this application extends beyond individual protection. By lo
 
 Install and run `app-release.apk`. Requires **Android 7.0 (Nougat)** or higher.
 
-![App Screenshot](![App Screenshot](SafeChat%20Screenshot.png)
-)
+![App Screenshot](SafeChatScreenshot.png)
+
 
 ## Features
 
