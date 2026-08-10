@@ -24,7 +24,7 @@ The app implements a hybrid approach to safety:
 - **On-Device NLP**: Every message is converted into a high-dimensional vector (embedding) using a quantized transformer model running via **ONNX Runtime**. This allows the app to detect grooming tactics based on *meaning* rather than just specific words, maintaining privacy by processing data locally.
 - **Rule-Based Fallback**: A keyword scoring engine provides a fast, initial layer of protection while the NLP model initializes.
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 | Layer | Technology |
 | :--- | :--- |
