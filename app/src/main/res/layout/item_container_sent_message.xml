@@ -6,7 +6,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:padding="@dimen/_4sdp">
 
-    <TextView
+    <com.example.chatapp.utilities.TightTextView
         android:id="@+id/textMessage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -20,9 +20,10 @@
         android:textSize="@dimen/_12ssp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintWidth_max="wrap"
-        app:layout_constraintWidth_percent="0.8"/>
+        android:layout_marginStart="@dimen/_40sdp"/>
 
     <ImageView
         android:id="@+id/imageWarning"

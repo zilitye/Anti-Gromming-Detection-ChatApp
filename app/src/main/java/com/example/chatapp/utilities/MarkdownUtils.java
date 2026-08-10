@@ -9,6 +9,13 @@ public class MarkdownUtils {
         if (text == null) return "";
         
         final Markwon markwon = Markwon.create(context);
-        return markwon.toMarkdown(text);
+        CharSequence markdown = markwon.toMarkdown(text);
+        
+        // Trim trailing newlines which can affect layout measurement and cause gaps
+        int len = markdown.length();
+        while (len > 0 && Character.isWhitespace(markdown.charAt(len - 1))) {
+            len--;
+        }
+        return markdown.subSequence(0, len);
     }
 }

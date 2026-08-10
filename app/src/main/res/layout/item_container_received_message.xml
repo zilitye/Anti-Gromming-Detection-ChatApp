@@ -16,7 +16,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:riv_oval="true"/>
 
-    <TextView
+    <com.example.chatapp.utilities.TightTextView
         android:id="@+id/textMessage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -34,7 +34,7 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintWidth_max="wrap"
-        app:layout_constraintWidth_percent="0.75"/>
+        android:layout_marginEnd="@dimen/_40sdp"/>
 
     <ImageView
         android:id="@+id/imageWarning"
