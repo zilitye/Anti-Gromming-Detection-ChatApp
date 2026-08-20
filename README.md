@@ -63,5 +63,3 @@ public static final String OPENAI_API_KEY = "YOUR_OPENAI_API_KEY_HERE";
 ### 4. Build and Run
 Open the project in **Android Studio**, sync Gradle, and run the app on your device or emulator.
 
-## Safety & Privacy
-All flagged incidents are stored securely in Firebase Firestore to maintain an auditable trail for safety purposes. Users can access the **Safety Assistant** at any time for resources and assistance.
