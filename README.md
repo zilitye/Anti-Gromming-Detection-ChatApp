@@ -15,15 +15,9 @@ Install and run `app-release.apk`. Requires **Android 7.0 (Nougat)** or higher.
 
 ## Features
 
-1.  **Real-time Semantic Detection (NLP)**: Unlike traditional keyword filters, the app uses a **local NLP embedding model** (`all-MiniLM-L6-v2`) to analyze message intent. It calculates the cosine similarity between outgoing messages and known grooming tactics entirely on-device, catching paraphrased or subtle grooming attempts.
-2.  **AI-Powered Safety Assistant**: A dedicated assistant powered by **OpenAI**, offering users compassionate, context-aware guidance, reporting pathways, and emotional support.
-3.  **Risk Dashboard & Reporting**: Visualizes the cumulative risk profile of a conversation over time and provides a structured mechanism for reporting unsafe interactions.
-4.  **Secure Communication**: Built on Firebase for reliable, real-time messaging and cloud storage.
+1. **Real-time Semantic Detection (On-Device NLP)**: Unlike traditional keyword filters, the app uses a **local NLP embedding model** (`all-MiniLM-L6-v2`) to analyze message intent. It calculates the cosine similarity between outgoing messages and known grooming tactics entirely on-device, catching paraphrased or subtle grooming attempts. Every message is converted into a high-dimensional vector (embedding) using a quantized transformer model running via **ONNX Runtime**. This allows the app to detect grooming tactics based on *meaning* rather than just specific words, maintaining privacy by processing data locally.
 
-## How the Detection Works
-The app implements a hybrid approach to safety:
-- **On-Device NLP**: Every message is converted into a high-dimensional vector (embedding) using a quantized transformer model running via **ONNX Runtime**. This allows the app to detect grooming tactics based on *meaning* rather than just specific words, maintaining privacy by processing data locally.
-- **Rule-Based Fallback**: A keyword scoring engine provides a fast, initial layer of protection while the NLP model initializes.
+2. **Rule-Based Fallback**: A keyword scoring engine provides a fast, initial layer of protection while the NLP model initializes.
 
 ## Tech Stack
 
