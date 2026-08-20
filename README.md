@@ -15,7 +15,7 @@ Install and run `app-release.apk`. Requires **Android 7.0 (Nougat)** or higher.
 
 ## Features
 
-1. **Real-time Semantic Detection (On-Device NLP)**: Unlike traditional keyword filters, the app uses a **local NLP embedding model** (`all-MiniLM-L6-v2`) to analyze message intent. It calculates the cosine similarity between outgoing messages and known grooming tactics entirely on-device, catching paraphrased or subtle grooming attempts. Every message is converted into a high-dimensional vector (embedding) using a quantized transformer model running via **ONNX Runtime**. This allows the app to detect grooming tactics based on *meaning* rather than just specific words, maintaining privacy by processing data locally.
+1. **Real-time Semantic Detection (On-Device NLP)**: Unlike traditional keyword filters, the app uses a **local NLP embedding model** (`all-MiniLM-L6-v2`) to analyze message intent. Every message is converted into a high-dimensional vector (embedding) using a quantized transformer model running via **ONNX Runtime**. It calculates the cosine similarity between outgoing messages and known grooming tactics entirely on-device, catching paraphrased or subtle grooming attempts. This allows the app to detect grooming tactics based on *meaning* rather than just specific words, maintaining privacy by processing data locally.
 
 2. **Rule-Based Fallback**: A keyword scoring engine provides a fast, initial layer of protection while the NLP model initializes.
 
