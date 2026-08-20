@@ -28,6 +28,7 @@ import com.example.chatapp.listeners.ConversionListener;
 import com.example.chatapp.models.ChatMessage;
 import com.example.chatapp.models.User;
 import com.example.chatapp.utilities.Constants;
+import com.example.chatapp.utilities.GroomingDetector;
 import com.example.chatapp.utilities.PreferenceManager;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
@@ -58,6 +59,7 @@ public class MainActivity extends BaseActivity implements ConversionListener {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         applyEdgeToEdge(binding.main);
+        GroomingDetector.initialize(getApplicationContext());
         preferenceManager = new PreferenceManager(getApplicationContext());
         init();
         loadUserDetails();
